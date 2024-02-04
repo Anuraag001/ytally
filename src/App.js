@@ -1,15 +1,12 @@
-import logo from './logo.svg';
-import Header from './components/Header';
+import { useEffect } from 'react';
+import Header from './components/Header_';
 import Body from './components/Body';
-import './App.css';
-
-function App() {
-  return (
-    <div className="App">
-      <Header />
-      <Body />
-    </div>
-  );
+import Back from './components/Back';
+function App(){
+  return(<>
+  <Header />
+  <Body />
+  <Back /></>);
 }
 
 export default App;

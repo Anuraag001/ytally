@@ -1,6 +1,10 @@
+import Glogin from './Glogin';
 function Body() {
     return (
-        <div className="bg-gray-100 h-screen flex items-center justify-center">
+        <>
+        <div className="flex flex-row basis-1/2 grow-0 shrink-0" id="a">
+        <div className="flex flex-row basis-1/2 grow-0 shrink-0"></div>
+        <div className="flex flex-row grow-0 shrink-0 basis-1/2 h-screen flex items-center justify-center">
 
             <div className="bg-white p-8 rounded shadow-md w-96">
 
@@ -22,11 +26,14 @@ function Body() {
                     <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300">
                         Sign In
                     </button>
+                    <Glogin />
                 </form>
 
             </div>
 
         </div>
+        </div>
+        </>
     );
 }
 
