@@ -7,20 +7,20 @@ function Glogin(){
           {
             /* global google */
             google.accounts.id.initialize({
-              client_id: '65982675416-00k9vauqph4o6lbue6qnq5hnp73juco3.apps.googleusercontent.com',
+              client_id: '201256679523-e5dl5or2n64k1v8bktttrjfmqqfceemc.apps.googleusercontent.com',
               callback: handleCallbackResponse
               
             });
     
             google.accounts.id.renderButton(
               document.getElementById("signinDiv"),
-              {theme:"outline", size:"large", text:"continue_with", width: "300px", height: "50px"})
+              {theme:"outline", size:"large", text:"continue_with", width: "320px", height: "50px"})
           },[]);
     
           return (
             <>
-            <div className>
-              <div id="signinDiv" className='my-5'></div>
+            <div className="w-full">
+              <div id="signinDiv" className='flex w-full my-5'></div>
               </div>
               </>
       );
