@@ -1,13 +1,28 @@
-const express = require('express');
-const app = express();
-const port = 3001;
+const express=require('express')
+const app=express()
+const bodyParser=require('body-parser')
+const userRoutes=require('./routes/userRoutes')
+const port=3001
 
-app.use("/users", require("./routes/usersRoute"));
+app.get('/',(req,res)=>{
+    res.json('Hello World')
+})
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
+app.use(bodyParser.json())
+app.use('/Users',userRoutes)
+app.post('/send',(req,res)=>{
+    const data=req.body
+    try{
+        if(!data.firstName || !data.lastName){
+            throw 'Invalid data'
+        }
+        res.send(`Hello ${data.firstName} ${data.lastName}`)
+    }
+    catch(err){
+        res.json({message:err})
+    }
+})
 
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
-});
+app.listen(port,()=>{
+    console.log(`Server is running on port ${port}`)
+})

@@ -2,12 +2,19 @@
   "name": "ytally",
   "version": "0.1.0",
   "private": true,
-  "proxy":"http://localhost:3001",
+  "exports": {
+    "./mongoDB.js": {
+      "type": "module"
+    }
+  },
+  "proxy": "http://localhost:3001",
   "dependencies": {
     "@react-oauth/google": "^0.12.1",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "mongodb": "^6.3.0",
+    "mongoose": "^8.1.1",
     "nodemon": "^3.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
