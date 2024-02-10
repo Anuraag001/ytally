@@ -1,4 +1,6 @@
 import Glogin from './Glogin';
+import { Link } from 'react-router-dom';
+
 function Body() {
     return (
         <>
@@ -27,7 +29,8 @@ function Body() {
                         Sign In
                     </button>
                     <Glogin />
-                    <div className="animate-bounce text-red-400">Dont have an account? Sign Up</div>
+                    <Link to="/signup" className="animate-bounce text-red-400">Don't have an account? Sign Up</Link>
+
                 </form>
 
             </div>
