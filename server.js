@@ -2,6 +2,7 @@ const express=require('express')
 const app=express()
 const bodyParser=require('body-parser')
 const userRoutes=require('./routes/userRoutes')
+const youtubeRoutes=require('./routes/youtubeRoutes')
 const port=3001
 
 app.get('/',(req,res)=>{
@@ -9,6 +10,7 @@ app.get('/',(req,res)=>{
 })
 
 app.use(bodyParser.json())
+app.use('/Youtube',youtubeRoutes)
 app.use('/Users',userRoutes)
 app.post('/send',(req,res)=>{
     const data=req.body
