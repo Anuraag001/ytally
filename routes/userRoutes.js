@@ -1,6 +1,7 @@
 const express=require('express')
 const mongoose=require('mongoose')
-const uri="mongodb+srv://ytally:ytally101@ytally.zsvxrz0.mongodb.net/ytallyDB?retryWrites=true&w=majority"
+const DOTENV=require('dotenv')
+const uri=DOTENV.config().parsed.MONGO_URI
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 const userSchema = new mongoose.Schema({
     firstName:{
