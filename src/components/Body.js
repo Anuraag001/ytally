@@ -1,7 +1,41 @@
 import Glogin from './Glogin';
 import { Link } from 'react-router-dom';
-
+import { useState } from 'react';
 function Body() {
+    const[email,setEmail]=useState('')
+    const[password,setPassword]=useState('')
+    const[details,setDetails]=useState({})
+    const handleSubmit=async (e)=>{
+        e.preventDefault();
+        const formData = {
+            emailID: email,
+            password: password,
+            };
+        
+        try{
+            const response = await fetch("Users/get", {
+                method: 'post',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+              });
+
+              if (response.ok) {
+                const data = await response.json();
+                console.log(data);
+                setDetails(data);
+              } else {
+                const errorData = await response.json();
+                console.log("Not Successful:", errorData);
+                setDetails(errorData);
+              }
+            } catch (err) {
+              console.log("Error Occurred:", err);
+              setDetails({ color: 'text-red-500', message: 'An error occurred while processing your request.' });
+            }
+        }
+    
     return (
         <>
         <div className="flex flex-row justify-center h-screen w-full grow-1" >
@@ -13,15 +47,16 @@ function Body() {
                     <h2 className="flex text-2xl font-semibold text-white justify-center items-center translate-y-36 duration-300 group-hover:translate-y-0">Sign In</h2>
                 </div>
 
-                <form className="transition duration-300 ease-out invisible scale-0 group-hover:visible group-hover:scale-100">
+                <form onSubmit={handleSubmit} className="transition duration-300 ease-out invisible scale-0 group-hover:visible group-hover:scale-100">
+                    <div className={details.color}>{details.message}</div>
                     <div className="mb-4">
-                        <label htmlFor="username" className="block text-white text-sm font-medium mb-2">Username</label>
-                        <input type="text" id="username" name="username" className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500" placeholder="Enter your username" required />
+                        <label htmlFor="email" className="block text-white text-sm font-medium mb-2">Email</label>
+                        <input type="email" id="email" name="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500" placeholder="Enter your username" required />
                     </div>
 
                     <div className="mb-4">
                         <label htmlFor="password" className="block text-white text-sm font-medium mb-2">Password</label>
-                        <input type="password" id="password" name="password" className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500" placeholder="Enter your password" required />
+                        <input type="password" id="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)}className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500" placeholder="Enter your password" required />
                     </div>
 
                     <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300 transition hover:-translate-y-1 hover:scale-105 duration-300">

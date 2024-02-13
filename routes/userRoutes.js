@@ -15,7 +15,12 @@ const userSchema = new mongoose.Schema({
     },
     emailID:{
         type:String,
-        required:true
+        required:true,
+        unique:true
+    },
+    password:{
+        type:String,
+        required:true,
     },
     joinedAT:{
         type:Date,
@@ -35,28 +40,39 @@ Route.get('/all',async (req,res)=>{
 
 Route.post('/get',async (req,res)=>{
     const data=req.body
-    const user=await User.findOne({emailID:data.emailID})
+    const user=await User.findOne({emailID:data.emailID,password:data.password})
     if(user){
-        res.json(user)
+        res.status(200).json({message:"Sign IN success",color:"text-lime-500"})
+    }
+    else if(User.findOne({emailID:data.emailID})){
+        res.status(400).json({message:"Incorrect Password try again !",color:"text-orange-900"})
     }
     else{
-        res.status(404)
+        res.status(404).json({message:"No User Found",color:"text-orange-900"})
     }
 })
 
 Route.post('/add',async (req,res)=>{
     const data=req.body
+
+    const existingUser = await User.findOne({ emailID: data.emailID })
+    if(existingUser) { 
+        return res.status(400).json({message:"Already Exists",color:"text-orange-900"})
+    }
+
     const newUser=new User({
         firstName:data.firstName,
         lastName:data.lastName,
-        emailID:data.emailID
+        emailID:data.emailID,
+        password:data.password
     })
     try{
+
         const user=await newUser.save()
-        res.json(user)
+        res.status(200).json({message:"Sign UP Successful",color:"text-lime-500"})
     }
     catch(err){
-        res.json({message:err})
+        res.status(200).json({message:err.message,color:"text-orange-900"})
     }
 })
 

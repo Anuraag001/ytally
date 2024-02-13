@@ -8,7 +8,7 @@ function Users(){
         )
     },[])
     return (
-        <div>
+        <div className='bg-white'>
             <h1>Users</h1>
             <ul>
                 {users.map((user,index)=>(
