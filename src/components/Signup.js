@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import Glogin from './Glogin.js';
+import { useLocation } from 'react-router-dom';
 
 const Signup = () => {
+  const location = useLocation();
+  const customPropValue = location.state.customProp;
   // Define state variables for form inputs
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -60,6 +63,9 @@ const Signup = () => {
       </button>
     </form>
     <Glogin/>
+    <div>
+        Custom Prop Value: {customPropValue}
+      </div>
   </div>  
   );
 };

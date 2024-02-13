@@ -29,7 +29,14 @@ function Body() {
                         Sign In
                     </button>
                     <Glogin />
-                    <Link to="/signup" className="animate-bounce text-red-400">Don't have an account? Sign Up</Link>
+                    <Link to={{
+                        pathname: "/signup",
+                        state: { customProp: "testing prop" } // Replace with your props
+                    }} 
+                className="animate-bounce text-red-400">
+                Don't have an account? Sign Up
+            </Link>
+            <Link to="/users">view all users</Link>
 
                 </form>
 
