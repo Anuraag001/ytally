@@ -6,7 +6,7 @@ function Header(){
             <div className="hover:text-green-300">About</div>
             <div className="hover:text-green-300">Products</div>
             <div className="hover:text-green-300">Contact</div>
-            <div className="hover:text-green-300">Create Account</div>
+            <div className="hover:text-green-300 rounded-md px-1 border-2 border-white">Create Account</div>
             </div>
         </div>
     )
