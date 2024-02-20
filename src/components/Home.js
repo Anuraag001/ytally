@@ -6,12 +6,10 @@ const Homepage = () => {
   const location = useLocation();
   const propsToPass = location.state;
   const email = propsToPass ? propsToPass.email : 'Email not provided';
-  const propstopass=location.state;
-  const userDetails = location.state?.userDetails || {};
-  const userEmail = userDetails?.user?.emailID;
   const [searchQuery, setSearchQuery] = useState('');
   const [videos, setVideos] = useState([]);
   const [error, setError] = useState(null);
+
   const handleSearch = async () => {
     try {
       const response = await axios.post('http://localhost:3001/Youtube/all', { q: searchQuery });
@@ -28,8 +26,18 @@ const Homepage = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-4xl font-bold mb-4">Welcome to the Home Page!{email ? email : userEmail}</h1>
+    <div className="flex flex-row p-4 gap-2 w-full grow-1">
+      <div className="flex flex-col basis-1/4 h-full ">
+        <div className='text-lg font-medium'>Channels</div>
+        <div className='flex border-2'></div>
+        <div>channel-1</div>
+        <div>channel-2</div>
+        <div>channel-3</div>
+        <div className='border-2 flex flex-row w-fit px-2 py-1 gap-2 border-dashed rounded'><img className="w-5 h-5 my-0.5" src={process.env.PUBLIC_URL + "/plus.png"}></img> Add Channel</div>
+      </div>
+    <div className='flex flex-row border-2'></div>
+      <div className='flex flex-col basis-3/4'>
+      <h1 className="text-4xl font-bold mb-4">Welcome to the Home Page!{email}</h1>
 
       {/* Search input and button */}
       <div className="mb-4">
@@ -46,27 +54,35 @@ const Homepage = () => {
 
       {/* Display search results */}
       <div className="flex flex-col">
+        
         {error && <p className="text-red-500">{error}</p>}
         {videos.map((video) => (
-          <div key={video.id.videoId} className="border border-gray-200 rounded p-4">
-            <a
+          <div className='flex flex-row w-full'>
+          <div key={video.id.videoId} className="flex flex-row w-full grow-1">
+            <div
               href={`https://www.youtube.com/watch?v=${video.id.videoId}`}
               target="_blank"
               rel="noopener noreferrer"
+              className='flex flex-row items-center gap-10 w-full justify-around'
             >
               <img
                 src={video.snippet.thumbnails.high.url}
                 alt={video.snippet.title}
-                className="w-full h-auto mb-4 rounded"
-                width="480"
-                height="360"
+                className="w-24 h-24 h-auto mb-4"
+                
               />
-              <h2 className="text-lg font-semibold mb-2">{video.snippet.title}</h2>
-            </a>
+              <div className="text-lg font-semibold mb-2 flex flex-row basis-2/3 shrink-0">{video.snippet.title}</div>
+              <div className='flex flex-row gap-2'>
+              <div>Add</div>
+              <div>view</div>
+              </div>
+            </div>
+          </div>
           </div>
         ))}
+        </div>
+        </div>
       </div>
-    </div>
   );
 };
 
