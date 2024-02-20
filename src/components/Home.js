@@ -9,6 +9,8 @@ const Homepage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [videos, setVideos] = useState([]);
   const [error, setError] = useState(null);
+  const userDetails = location.state?.userDetails || {};
+  const userEmail = userDetails?.user?.emailID;
 
   const handleSearch = async () => {
     try {
@@ -37,7 +39,7 @@ const Homepage = () => {
       </div>
     <div className='flex flex-row border-2'></div>
       <div className='flex flex-col basis-3/4'>
-      <h1 className="text-4xl font-bold mb-4">Welcome to the Home Page!{email}</h1>
+      <h1 className="text-4xl font-bold mb-4">Welcome to the Home Page!{email ? email:userEmail}</h1>
 
       {/* Search input and button */}
       <div className="mb-4">
