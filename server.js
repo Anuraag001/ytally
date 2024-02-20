@@ -1,9 +1,11 @@
 const express=require('express')
+const cors = require('cors');
 const app=express()
 const bodyParser=require('body-parser')
 const userRoutes=require('./routes/userRoutes')
 const youtubeRoutes=require('./routes/youtubeRoutes')
 const port=3001
+app.use(cors());
 
 app.get('/',(req,res)=>{
     res.json('Hello World')

@@ -14,7 +14,8 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.6.7",
-    "dotenv": "^16.4.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.4",
     "gapi": "^0.0.3",
     "googleapis": "^133.0.0",
     "jwt-decode": "^4.0.0",
@@ -52,5 +53,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "tsx": "^4.7.1"
   }
 }

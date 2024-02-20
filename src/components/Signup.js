@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Glogin from './Glogin.js';
-import { useLocation } from 'react-router-dom';
+import { useLocation,useHistory } from 'react-router-dom';
 
 const Signup = () => {
   const location = useLocation();
@@ -11,10 +11,12 @@ const Signup = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [details,setDetails]=useState({})
+  const [signupSuccess, setSignupSuccess] = useState(false); // New state
+  const history=useHistory();
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log('Form submitted:', { first, last, email, password, confirmPassword });
-    if(password!=confirmPassword){
+    if(password!==confirmPassword){
       return setDetails({ color: 'text-red-500', message: 'Password and Confirm Passwords are different' });
     }
     const formData = {
@@ -37,6 +39,20 @@ const Signup = () => {
         const data = await response.json();
         console.log(data);
         setDetails(data);
+        setSignupSuccess(true);
+        
+        // Set props to be passed to the home component
+        const propsToPass = {
+            email: email // Pass the email as a prop
+        };
+    
+        setTimeout(() => {
+            history.push({
+                pathname: '/home',
+                state: propsToPass // Pass props using the state object
+            });  
+        }, 1000);
+    
       } else {
         const errorData = await response.json();
         console.log("Not Successful:", errorData);
