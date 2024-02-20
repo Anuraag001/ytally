@@ -1,40 +1,68 @@
 import Glogin from './Glogin';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { useState } from 'react';
 function Body() {
-    const[email,setEmail]=useState('')
-    const[password,setPassword]=useState('')
-    const[details,setDetails]=useState({})
-    const handleSubmit=async (e)=>{
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [details, setDetails] = useState({});
+    const history = useHistory();
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const formData = {
             emailID: email,
             password: password,
-            };
-        
-        try{
-            const response = await fetch("Users/get", {
+        };
+
+        try {
+            const response = await fetch("Users/check", {
                 method: 'post',
                 headers: {
-                  'Content-Type': 'application/json',
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(formData)
-              });
+            });
 
-              if (response.ok) {
+            if (response.ok) {
                 const data = await response.json();
                 console.log(data);
                 setDetails(data);
-              } else {
+
+                // Assuming "Users/get" returns user details after successful login
+                const userDetailsResponse = await fetch("Users/get", {
+                    method: 'post',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (userDetailsResponse.ok) {
+                    const userDetailsData = await userDetailsResponse.json();
+                    console.log("User Details:", userDetailsData);
+
+                    // Store user details in the state
+                    setDetails(userDetailsData);
+
+                    // Navigate to home with user details in the state
+                    history.push({
+                        pathname: '/home',
+                        state: { userDetails: userDetailsData },
+                    });
+                } else {
+                    // Handle error when fetching user details
+                    console.error("Error fetching user details");
+                }
+            } else {
                 const errorData = await response.json();
                 console.log("Not Successful:", errorData);
                 setDetails(errorData);
-              }
-            } catch (err) {
-              console.log("Error Occurred:", err);
-              setDetails({ color: 'text-red-500', message: 'An error occurred while processing your request.' });
             }
+        } catch (err) {
+            console.log("Error Occurred:", err);
+            setDetails({ color: 'text-red-500', message: 'An error occurred while processing your request.' });
         }
+    }
     
     return (
         <>

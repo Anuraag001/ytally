@@ -37,8 +37,22 @@ Route.get('/all',async (req,res)=>{
     const allUsers=await User.find({})
     res.json(allUsers)
 })
+Route.post('/get', async (req, res) => {
+    try {
+        const data = req.body;
+        const userdetails = await User.findOne({ emailID: data.emailID });
 
-Route.post('/get',async (req,res)=>{
+        if (userdetails) {
+            res.status(200).json({  user: userdetails });
+        } else {
+            res.status(404).json({ message: "User not found", color: "text-orange-900" });
+        }
+    } catch (error) {
+        console.error("Error occurred:", error);
+        res.status(500).json({ message: "Internal Server Error", color: "text-red-500" });
+    }
+});
+Route.post('/check',async (req,res)=>{
     const data=req.body
     const user=await User.findOne({emailID:data.emailID,password:data.password})
     if(user){

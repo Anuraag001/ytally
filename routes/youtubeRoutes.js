@@ -14,7 +14,6 @@ Route.post('/all', async (req, res) => {
         });
         params.append('key', apiKey);
         params.append('part', 'snippet');
-
         const apiUrl = `https://www.googleapis.com/youtube/v3/search?${params.toString()}`;
 
         const response = await axios.get(apiUrl);

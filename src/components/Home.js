@@ -6,10 +6,12 @@ const Homepage = () => {
   const location = useLocation();
   const propsToPass = location.state;
   const email = propsToPass ? propsToPass.email : 'Email not provided';
+  const propstopass=location.state;
+  const userDetails = location.state?.userDetails || {};
+  const userEmail = userDetails?.user?.emailID;
   const [searchQuery, setSearchQuery] = useState('');
   const [videos, setVideos] = useState([]);
   const [error, setError] = useState(null);
-
   const handleSearch = async () => {
     try {
       const response = await axios.post('http://localhost:3001/Youtube/all', { q: searchQuery });
@@ -27,7 +29,7 @@ const Homepage = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-4xl font-bold mb-4">Welcome to the Home Page!{email}</h1>
+      <h1 className="text-4xl font-bold mb-4">Welcome to the Home Page!{email ? email : userEmail}</h1>
 
       {/* Search input and button */}
       <div className="mb-4">
