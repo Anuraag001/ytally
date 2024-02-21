@@ -2,7 +2,7 @@ const express=require('express')
 const mongoose=require('mongoose')
 const DOTENV=require('dotenv')
 const uri=DOTENV.config().parsed.MONGO_URI
-mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true,serverSelectionTimeoutMS:5000000 });
 const userSchema = new mongoose.Schema({
     firstName:{
         type:String,
