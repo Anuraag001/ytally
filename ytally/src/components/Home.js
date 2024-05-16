@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useLocation } from 'react-router-dom';
+import { useLocation,useHistory } from 'react-router-dom';
 
 const Homepage = () => {
   const location = useLocation();
+  const history= useHistory();
   const propsToPass = location.state;
   const email = propsToPass ? propsToPass.email : 'Email not provided';
   const [searchQuery, setSearchQuery] = useState('');
@@ -11,6 +12,12 @@ const Homepage = () => {
   const [error, setError] = useState(null);
   const userDetails = location.state?.userDetails || {};
   const userEmail = userDetails?.user?.emailID;
+  
+  /*useEffect(() => {
+    // Redirect user to the home page with their username in the URL
+    console.log("userdetails",userDetails)
+    history.replace(`/home/${userDetails.user.firstName}`);
+  }, []);*/
 
   const handleSearch = async () => {
     try {

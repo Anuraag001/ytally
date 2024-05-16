@@ -12,6 +12,7 @@ function HomeHead(){
                     <div>emailID</div>
                 </div>
             </div>
+            <div>Sign out</div>
             </div>
         </div>
     )
