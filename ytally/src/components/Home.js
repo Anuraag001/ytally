@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useLocation } from 'react-router-dom';
+import { useLocation,useHistory } from 'react-router-dom';
 
 const Homepage = () => {
   const location = useLocation();
+  const history= useHistory();
   const propsToPass = location.state;
   const email = propsToPass ? propsToPass.email : 'Email not provided';
   const [searchQuery, setSearchQuery] = useState('');
@@ -11,6 +12,56 @@ const Homepage = () => {
   const [error, setError] = useState(null);
   const userDetails = location.state?.userDetails || {};
   const userEmail = userDetails?.user?.emailID;
+  const [channel, setChannel] = useState('');
+  const [channelId, setChannelId] = useState('');
+  const [playlists, setPlaylists] = useState([]);
+  
+  /*useEffect(() => {
+    // Redirect user to the home page with their username in the URL
+    console.log("userdetails",userDetails)
+    history.replace(`/home/${userDetails.user.firstName}`);
+  }, []);*/
+
+  useEffect( ()=>{
+    const fetch= async()=>{
+      const params={
+        username: 'GoogleDevelopers',
+      };
+  
+      const response= await axios.post('http://localhost:3001/Youtube/details',{},{params});
+      console.log(response.data);
+      setChannel(response.data.snippet.title);
+      setChannelId(response.data.id)
+    }
+
+    fetch();
+  },[]);
+
+  useEffect(()=>{
+    if(!channelId) return;
+
+    const playlist=async()=>{
+      const params={
+        channelId: channelId,
+      };
+      const response= await axios.post('http://localhost:3001/Youtube/playlists',{},{params});
+      console.log(response.data);
+      const allplaylists=response.data;
+      var required=[];
+      allplaylists.forEach((playlist)=>{
+        console.log(playlist.snippet.title);
+        required.push({
+          title: playlist.snippet.title,
+          id: playlist.id,
+          imageUrl:playlist.snippet.thumbnails.default.url    
+        })
+      });
+      console.log(required);
+      setPlaylists(required);
+    }
+    console.log(channelId)
+    playlist();
+  },[channelId]);
 
   const handleSearch = async () => {
     try {
@@ -30,13 +81,27 @@ const Homepage = () => {
   return (
     <div className="flex flex-row p-4 gap-2 w-full grow-1">
       <div className="flex flex-col basis-1/4 h-full ">
-        <div className='text-lg font-medium'>Channels</div>
+        <div className='text-lg font-medium'>Channel Name</div>
         <div className='flex border-2'></div>
-        <div>channel-1</div>
-        <div>channel-2</div>
-        <div>channel-3</div>
-        <div className='border-2 flex flex-row w-fit px-2 py-1 gap-2 border-dashed rounded'><img className="w-5 h-5 my-0.5" src={process.env.PUBLIC_URL + "/plus.png"}></img> Add Channel</div>
+        <div>{channel}</div>
+        
+        {/*<div className='border-2 flex flex-row w-fit px-2 py-1 gap-2 border-dashed rounded'><img className="w-5 h-5 my-0.5" src={process.env.PUBLIC_URL + "/plus.png"}></img> Add Channel</div>*/}
+        <div className='text-lg font-medium'>All Playlists</div>
+        <div className='flex border-2'></div>
+        {
+          playlists.map((playlist)=>{
+              return(<>
+                <div className='flex flex-row'>
+                  <img src={playlist.imageUrl} className='h-4'></img>
+              <div className='text-xs'>{playlist.title}</div>
+              </div>
+              </>
+            )
+          })
+        }
+        
       </div>
+      
     <div className='flex flex-row border-2'></div>
       <div className='flex flex-col basis-3/4'>
       <h1 className="text-4xl font-bold mb-4">Welcome to the Home Page!{email ? email:userEmail}</h1>
