@@ -44,8 +44,20 @@ const Homepage = () => {
       const params={
         channelId: channelId,
       };
-      const response2= await axios.post('http://localhost:3001/Youtube/playlists',{},{params});
-      console.log(response2.data);
+      const response= await axios.post('http://localhost:3001/Youtube/playlists',{},{params});
+      console.log(response.data);
+      const allplaylists=response.data;
+      var required=[];
+      allplaylists.forEach((playlist)=>{
+        console.log(playlist.snippet.title);
+        required.push({
+          title: playlist.snippet.title,
+          id: playlist.id,
+          imageUrl:playlist.snippet.thumbnails.default.url    
+        })
+      });
+      console.log(required);
+      setPlaylists(required);
     }
     console.log(channelId)
     playlist();
@@ -74,7 +86,22 @@ const Homepage = () => {
         <div>{channel}</div>
         
         {/*<div className='border-2 flex flex-row w-fit px-2 py-1 gap-2 border-dashed rounded'><img className="w-5 h-5 my-0.5" src={process.env.PUBLIC_URL + "/plus.png"}></img> Add Channel</div>*/}
+        <div className='text-lg font-medium'>All Playlists</div>
+        <div className='flex border-2'></div>
+        {
+          playlists.map((playlist)=>{
+              return(<>
+                <div className='flex flex-row'>
+                  <img src={playlist.imageUrl} className='h-4'></img>
+              <div className='text-xs'>{playlist.title}</div>
+              </div>
+              </>
+            )
+          })
+        }
+        
       </div>
+      
     <div className='flex flex-row border-2'></div>
       <div className='flex flex-col basis-3/4'>
       <h1 className="text-4xl font-bold mb-4">Welcome to the Home Page!{email ? email:userEmail}</h1>
