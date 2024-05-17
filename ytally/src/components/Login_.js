@@ -4,7 +4,7 @@ function Login_(){
     return (
         <GoogleLogin
   onSuccess={credentialResponse => {
-    console.log(credentialResponse);
+    console.log(`${credentialResponse} response after glogin`);
   }}
   onError={() => {
     console.log('Login Failed');
