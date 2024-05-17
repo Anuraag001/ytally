@@ -12,12 +12,44 @@ const Homepage = () => {
   const [error, setError] = useState(null);
   const userDetails = location.state?.userDetails || {};
   const userEmail = userDetails?.user?.emailID;
+  const [channel, setChannel] = useState('');
+  const [channelId, setChannelId] = useState('');
+  const [playlists, setPlaylists] = useState([]);
   
   /*useEffect(() => {
     // Redirect user to the home page with their username in the URL
     console.log("userdetails",userDetails)
     history.replace(`/home/${userDetails.user.firstName}`);
   }, []);*/
+
+  useEffect( ()=>{
+    const fetch= async()=>{
+      const params={
+        username: 'GoogleDevelopers',
+      };
+  
+      const response= await axios.post('http://localhost:3001/Youtube/details',{},{params});
+      console.log(response.data);
+      setChannel(response.data.snippet.title);
+      setChannelId(response.data.id)
+    }
+
+    fetch();
+  },[]);
+
+  useEffect(()=>{
+    if(!channelId) return;
+
+    const playlist=async()=>{
+      const params={
+        channelId: channelId,
+      };
+      const response2= await axios.post('http://localhost:3001/Youtube/playlists',{},{params});
+      console.log(response2.data);
+    }
+    console.log(channelId)
+    playlist();
+  },[channelId]);
 
   const handleSearch = async () => {
     try {
@@ -37,12 +69,11 @@ const Homepage = () => {
   return (
     <div className="flex flex-row p-4 gap-2 w-full grow-1">
       <div className="flex flex-col basis-1/4 h-full ">
-        <div className='text-lg font-medium'>Channels</div>
+        <div className='text-lg font-medium'>Channel Name</div>
         <div className='flex border-2'></div>
-        <div>channel-1</div>
-        <div>channel-2</div>
-        <div>channel-3</div>
-        <div className='border-2 flex flex-row w-fit px-2 py-1 gap-2 border-dashed rounded'><img className="w-5 h-5 my-0.5" src={process.env.PUBLIC_URL + "/plus.png"}></img> Add Channel</div>
+        <div>{channel}</div>
+        
+        {/*<div className='border-2 flex flex-row w-fit px-2 py-1 gap-2 border-dashed rounded'><img className="w-5 h-5 my-0.5" src={process.env.PUBLIC_URL + "/plus.png"}></img> Add Channel</div>*/}
       </div>
     <div className='flex flex-row border-2'></div>
       <div className='flex flex-col basis-3/4'>
