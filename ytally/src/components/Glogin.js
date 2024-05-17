@@ -1,12 +1,18 @@
 import { useEffect } from 'react';
-import { jwtDecode } from 'jwt-decode';
+import { useHistory } from 'react-router-dom';
+import {jwtDecode} from 'jwt-decode';
 
 function Glogin() {
+    const history = useHistory();
+
     function handleCallbackResponse(response) {
         console.log("Response Credential:", response.credential);
         var userObject = jwtDecode(response.credential);
         console.log(userObject);
         // Handle the response here, such as signing up the user
+
+        // Redirect to the homepage upon successful login
+        history.push('/home');
     }
 
     useEffect(() => {
