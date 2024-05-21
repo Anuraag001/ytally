@@ -8,7 +8,7 @@ function Glogin() {
     function handleCallbackResponse(response) {
         console.log("Response Credential:", response.credential);
         var userObject = jwtDecode(response.credential);
-        console.log(userObject);
+        console.log(response.credential);
         // Handle the response here, such as signing up the user
 
         // Redirect to the homepage upon successful login

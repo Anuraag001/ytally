@@ -15,7 +15,11 @@ const Homepage = () => {
   const [channel, setChannel] = useState('');
   const [channelId, setChannelId] = useState('');
   const [playlists, setPlaylists] = useState([]);
-  
+  const { search } = useLocation();
+  const params = new URLSearchParams(search);
+  const username = params.get('username');
+  const encodedUsername = encodeURIComponent(username);
+  console.log(encodedUsername);
   /*useEffect(() => {
     // Redirect user to the home page with their username in the URL
     console.log("userdetails",userDetails)
@@ -25,11 +29,11 @@ const Homepage = () => {
   useEffect( ()=>{
     const fetch= async()=>{
       const params={
-        username: 'GoogleDevelopers',
+        username: 'kristenstewart2255',
       };
-  
+
       const response= await axios.post('http://localhost:3001/Youtube/details',{},{params});
-      console.log(response.data);
+      console.log("response.data" `${response.data}`);
       setChannel(response.data.snippet.title);
       setChannelId(response.data.id)
     }
