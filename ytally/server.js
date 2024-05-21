@@ -37,9 +37,7 @@
       }); 
       console.log("sk")
       console.log(authUrl);
-      res.redirect(authUrl);
-          
-      
+      res.json({ url: authUrl });
     }); 
     
     app.get('/oauth2callback', async (req, res) => { 
@@ -56,7 +54,11 @@
       }); 
       console.log("oauthcallback")
       const username = response.data.items[0].snippet.title;
-      res.send(`<pre>${JSON.stringify(response.data, null, 2)}</pre>`); 
+      const channelId = response.data.items[0].id;
+      //console.log(response);
+      //res.send(channelId); 
+      res.redirect(`http://localhost:3000?channelId=${channelId}`);
+      
     }); 
   // Custom routes
   app.use('/Youtube', youtubeRoutes);

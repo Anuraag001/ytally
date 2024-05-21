@@ -1,6 +1,7 @@
 import Glogin from './Glogin';
 import { Link, useHistory } from 'react-router-dom';
 import { useState } from 'react';
+import Login from './Login';
 function Body() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -88,18 +89,21 @@ function Body() {
                     </div>
 
                     <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300 transition hover:-translate-y-1 hover:scale-105 duration-300">
-                        Sign In
+                        Editor Sign In
                     </button>
-                    <Glogin />
+                    {/*<Glogin />
                     <Link to={{
                         pathname: "/signup",
                         state: { customProp: "testing prop" } // Replace with your props
                     }} 
                 className="animate-bounce text-green-300 text-lg">
                 Don't have an account? Sign Up
-            </Link><br></br>
+                </Link><br></br>*/}
+                <br/>
+                <br/>
+                <Login/>
             <Link to="/users" className="text-green-300 text-lg">view all users</Link>
-
+                
                 </form>
                 </div>
             </div>

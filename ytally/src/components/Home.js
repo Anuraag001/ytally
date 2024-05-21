@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useLocation, useHistory } from 'react-router-dom';
+import { set } from 'mongoose';
 
 const Homepage = () => {
   const location = useLocation();
@@ -22,8 +23,8 @@ const Homepage = () => {
     history.replace(`/home/${userDetails.user.firstName}`);
   }, []);*/
 
-  useEffect( ()=>{
-    const fetch= async()=>{
+  /*useEffect( ()=>{
+    const fetchChannelDetails= async()=>{
       const params={
         username: 'GoogleDevelopers',
       };
@@ -35,17 +36,20 @@ const Homepage = () => {
     };
 
     fetchChannelDetails();
-  }, []);
+  }, []);*/
 
   useEffect(() => {
-    if (!channelId) return;
 
     const fetchPlaylists = async () => {
+      setChannelId(location.state.channelId);
+      console.log('Channel ID:', channelId);
+      if(!channelId) return;
       const params = {
         channelId: channelId,
       };
       const response = await axios.post('http://localhost:3001/Youtube/playlists', {}, { params });
       console.log(response.data);
+      if(response.data.error=='No playlists found for this channel') {setPlaylists([]); return;}
       const allPlaylists = response.data;
       const required = allPlaylists.map((playlist) => ({
         title: playlist.snippet.title,
@@ -112,7 +116,7 @@ const Homepage = () => {
 
       <div className='flex flex-row border-2'></div>
       <div className='flex flex-col basis-3/4'>
-        <h1 className="text-4xl font-bold mb-4">Welcome to the Home Page! {email || userEmail}</h1>
+        <h1 className="text-4xl font-bold mb-4">Welcome to the Home Page! {email || userEmail || location.state.channelId}</h1>
 
         <div className="mb-4">
           <input

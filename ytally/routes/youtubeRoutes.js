@@ -117,7 +117,7 @@ const API_KEY = 'AIzaSyDhngiHaM5o7q_2iQRJgHhGsSqnvtctoLc';
             const playlists = await getPlaylistsByChannelId(channelId);
             res.json(playlists);
         } catch (error) {
-            res.status(500).json({ error: error.message });
+            res.status(200).json({ error: error.message });
         }
     });
 
