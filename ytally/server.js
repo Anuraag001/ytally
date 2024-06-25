@@ -17,10 +17,9 @@ const express = require('express');
   const port = 3001;
 
   // Replace with your OAuth 2.0 Client ID and Client Secret
-  console.log(process.env.CLIENT_ID);
-  const CLIENT_ID = "65982675416-s45ajkpnc9n6ciguqprki1d64vvb02jr.apps.googleusercontent.com";
-  const CLIENT_SECRET = "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";
-  const REDIRECT_URI = 'http://localhost:3001/oauth2callback';
+  const CLIENT_ID = process.env.CLIENT_ID;
+  const CLIENT_SECRET = process.env.CLIENT_SECRET;
+  const REDIRECT_URI =  process.env.REDIRECT_URI;
 
   // Scope for accessing YouTube account information
   const SCOPES = ['https://www.googleapis.com/auth/youtube.readonly'];
