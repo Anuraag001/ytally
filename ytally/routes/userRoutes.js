@@ -3,29 +3,48 @@ const mongoose=require('mongoose')
 const DOTENV=require('dotenv')
 const uri=DOTENV.config().parsed.MONGO_URI
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true,serverSelectionTimeoutMS:5000000 });
+
+const editorSchema=new mongoose.Schema({
+    emailID:{
+        type:String,
+        required:false
+    }
+})
+
+const playListSchema=new mongoose.Schema({
+    Id:{
+        type:String,
+        required:false,
+        editors:[editorSchema]
+    }
+})
 const userSchema = new mongoose.Schema({
     firstName:{
         type:String,
-        required:true
+        required:false
     
     },
     lastName:{
         type:String,
-        required:true
+        required:false
     },
     emailID:{
         type:String,
-        required:true,
+        required:false,
         unique:true
     },
     password:{
         type:String,
-        required:true,
+        required:false,
     },
     joinedAT:{
         type:Date,
         default:Date.now
     
+    },
+    allPlaylists:{
+        type:[playListSchema],
+        default:[]
     }
 });
 
@@ -121,6 +140,28 @@ Route.patch('/update', async (req, res)=>{
     }
     else{
         res.status(404).json({message:"User not found"})
+    }
+})
+
+Route.post('/setPlaylists', async (req, res) => {
+    const email = req.query.emailId
+    console.log(email);
+    try {
+        const user = await User.findOne({ emailID: email });
+        if (user) {
+            console.log(user);
+            res.send({ message: { user } });
+        } else {
+            const newUser = new User({
+                emailID: email,
+            });
+            const savedUser = await newUser.save();
+            console.log(`new is ${savedUser.id}`);
+            res.send({ message: { user: savedUser } });
+        }
+    } catch (error) {
+        console.error("Error occurred:", error);
+        res.status(500).json({ message: "Internal Server Error", error: error.message });
     }
 })
 
