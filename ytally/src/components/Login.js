@@ -6,12 +6,22 @@ const Login = () => {
   const [channelId, setChannelId] = useState('');
   const history=useHistory();
 
+  const updateUser=async ()=>{
+    const query={
+      emailId:"sample@gmail.com",
+    }
+
+    const response= await axios.post('http://localhost:3001/Users/setPlaylists',{},{query})
+    console.log(response.data)
+}
+
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const channelId = urlParams.get('channelId');
     const username=urlParams.get('username');
     if (channelId && username) {
       setChannelId(channelId);
+      updateUser()
       history.push({
         pathname: '/home',
         state: { channelId: channelId ,username:username},
@@ -19,14 +29,15 @@ const Login = () => {
     }
   }, []);
 
+
   const handleLogin = async () => {
     try {
       const response = await axios.get('http://localhost:3001/auth');
       console.log(response);
       window.location.href = response.data.url;
-      /*const finalResponse= await axios.get(response.data.url);
+      const finalResponse= await axios.get(response.data.url);
       console.log(finalResponse.data);
-      setChannelId(finalResponse.data);*/
+      setChannelId(finalResponse.data);
     } catch (error) {
       console.error('Error during authentication', error);
     }
