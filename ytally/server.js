@@ -1,4 +1,4 @@
-  const express = require('express');
+const express = require('express');
   const cors = require('cors');
   const bodyParser = require('body-parser');
   // const { google } = require('googleapis');
@@ -7,18 +7,14 @@
   const { google } = require('googleapis'); 
   // const cors = require('cors');
   const OAuth2 = google.auth.OAuth2; 
-  const Adminuser=require('./routes/creatorroute');
-// const { Admin } = require('mongodb');
-  const mongoclientId = "201256679523-e5dl5or2n64k1v8bktttrjfmqqfceemc.apps.googleusercontent.com";
-
 
   const app = express();
   const port = 3001;
 
   // Replace with your OAuth 2.0 Client ID and Client Secret
-  const CLIENT_ID = '65982675416-s45ajkpnc9n6ciguqprki1d64vvb02jr.apps.googleusercontent.com';
-  const CLIENT_SECRET = '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';
-  const REDIRECT_URI = 'http://localhost:3001/oauth2callback'; // Update to match your server port
+  const CLIENT_ID = process.env.CLIENT_ID;
+  const CLIENT_SECRET = process.env.CLIENT_SECRET;
+  const REDIRECT_URI =  process.env.REDIRECT_URI;
 
   // Scope for accessing YouTube account information
   const SCOPES = ['https://www.googleapis.com/auth/youtube.readonly'];
@@ -64,59 +60,6 @@
       res.redirect(`http://localhost:3000?channelId=${channelId}&username=${username}`);
       
     }); 
-    app.post('/register', async (req, res) => {
-      const { email, username, channelId } = req.body;
-    
-      try {
-        const newUser = new Adminuser({ email, username, channelId });
-        await newUser.save();
-        res.status(201).json({ message: 'User registered successfully' });
-      } catch (error) {
-        console.error('Error registering user:', error.message);
-        res.status(500).json({ error: 'Failed to register user' });
-      }
-    });
-    //if at some point the functionality to update user is to be added
-    app.post('/updateUser', async (req, res) => {
-      const { email, username, channelId } = req.body;
-    
-      try {
-        const user = await Adminuser.findOne({ email });
-        if (user) {
-          user.username = username;
-          user.channelId = channelId;
-          await user.save();
-          res.status(200).json({ message: 'User details updated successfully' });
-        } else {
-          res.status(404).json({ error: 'User not found' });
-        }
-      } catch (error) {
-        console.error('Error updating user details:', error.message);
-        res.status(500).json({ error: 'Failed to update user details' });
-      }
-    });   
-    // Example route in your Express server to update user editors
-app.post('/Users/updateEditors', async (req, res) => {
-  try {
-    const { userEmail, editorsToAdd } = req.body;
-    // Find user document by userEmail and update editors field
-    const updatedUser = await User.findOneAndUpdate(
-      { emailID: userEmail }, // Assuming your user document has emailID field
-      { $push: { editors: { $each: editorsToAdd } } }, // Add editors to existing array
-      { new: true } // Return updated document
-    );
-
-    if (!updatedUser) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    res.status(200).json({ updatedUser });
-  } catch (error) {
-    console.error('Error updating user editors:', error);
-    res.status(500).json({ message: 'Internal Server Error' });
-  }
-});
- 
   // Custom routes
   app.use('/Youtube', youtubeRoutes);
   app.use('/Users', userRoutes);
@@ -136,9 +79,5 @@ app.post('/Users/updateEditors', async (req, res) => {
 
   // Start the server
   app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+    console.log(`Server is running on port ${port}"`);
   });
-
-
-
-
