@@ -52,6 +52,21 @@ Route.post('/get', async (req, res) => {
         res.status(500).json({ message: "Internal Server Error", color: "text-red-500" });
     }
 });
+Route.post('/editors/search', async (req, res) => {
+    try {
+        const { email } = req.body;
+        console.log(`req.BODYIS${req.body}`);
+        const user = await User.findOne({ emailID: email });
+        if (user) {
+            res.status(200).json({ user });
+        } else {
+            res.status(404).json({ message: "User not found" });
+        }
+    } catch (error) {
+        console.error("Error searching for editor:", error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
 Route.post('/check',async (req,res)=>{
     const data=req.body
     const user=await User.findOne({emailID:data.emailID,password:data.password})

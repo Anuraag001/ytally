@@ -9,11 +9,12 @@ const Login = () => {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const channelId = urlParams.get('channelId');
-    if (channelId) {
+    const username=urlParams.get('username');
+    if (channelId && username) {
       setChannelId(channelId);
       history.push({
         pathname: '/home',
-        state: { channelId: channelId },
+        state: { channelId: channelId ,username:username},
     });
     }
   }, []);

@@ -6,7 +6,7 @@ import Body from './components/Body';
 import Users from './components/Users';
 import Homepage from './components/Home';
 import HomeHead from './components/homeHeader';
-import Login from './components/AAAuth'
+import Login from './components/AAAuth';
 // import Auth from './components/Auth'
 // import ParticleComponent from './components/ParticleComponent';
 const clientId = "201256679523-e5dl5or2n64k1v8bktttrjfmqqfceemc.apps.googleusercontent.com";
@@ -54,3 +54,10 @@ function AuthenticatedHomepage() {
 export default App;
 
 // export default App;
+class overlay extends React.Component{
+  constructor(props){
+    super(props);
+      this.close=this.close.bind(this);
+      this.handleClick=this.handleClick.bind(this);
+  }
+}
