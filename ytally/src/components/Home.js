@@ -111,6 +111,7 @@ const Homepage = () => {
 
     const handleAddEditor = (editor) => {
       setSelectedEditors((prevSelectedEditors) => [...prevSelectedEditors, editor]);
+      
     };
 
   return (
