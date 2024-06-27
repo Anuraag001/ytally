@@ -6,12 +6,14 @@ const Login = () => {
   const [channelId, setChannelId] = useState('');
   const history=useHistory();
 
-  const updateUser=async ()=>{
+  const updateUser=async (email,channelId,username)=>{
     const query={
-      emailId:"sample@gmail.com",
+      emailId:email,
+      channelId:channelId,
+      username:username
     }
 
-    const response= await axios.post('http://localhost:3001/Users/setPlaylists',{},{query})
+    const response= await axios.post('http://localhost:3001/Users/setPlaylists',{},{params:query})
     console.log(response.data)
 }
 
@@ -19,9 +21,11 @@ const Login = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const channelId = urlParams.get('channelId');
     const username=urlParams.get('username');
-    if (channelId && username) {
+    const emailId=urlParams.get('emailId');
+    if (channelId && username && emailId) {
       setChannelId(channelId);
-      updateUser()
+      console.log(`emailId is`)
+      updateUser(emailId,channelId,username)
       history.push({
         pathname: '/home',
         state: { channelId: channelId ,username:username},

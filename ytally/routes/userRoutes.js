@@ -1,6 +1,7 @@
 const express=require('express')
 const mongoose=require('mongoose')
 const DOTENV=require('dotenv')
+const axios = require('axios');
 const uri=DOTENV.config().parsed.MONGO_URI
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true,serverSelectionTimeoutMS:5000000 });
 
@@ -12,9 +13,9 @@ const editorSchema=new mongoose.Schema({
 })
 
 const playListSchema=new mongoose.Schema({
-    Id:{
+    PlaylistId:{
         type:String,
-        required:false,
+        required:true,
         editors:[editorSchema]
     }
 })
@@ -45,7 +46,15 @@ const userSchema = new mongoose.Schema({
     allPlaylists:{
         type:[playListSchema],
         default:[]
-    }
+    },
+    lastLogin:{
+        type:Date,
+        default:Date.now
+    },
+    channelID:{
+        type:String,
+        required:false
+    },
 });
 
 const User = mongoose.model('users', userSchema);
@@ -160,6 +169,8 @@ Route.patch('/update', async (req, res)=>{
 
 Route.post('/setPlaylists', async (req, res) => {
     const email = req.query.emailId
+    const channelId = req.query.channelId
+    const username = req.query.username
     console.log(email);
     try {
         const user = await User.findOne({ emailID: email });
@@ -167,9 +178,18 @@ Route.post('/setPlaylists', async (req, res) => {
             console.log(user);
             res.send({ message: { user } });
         } else {
+            const playlistsarray= await axios.post('http://localhost:3001/Youtube/playlistsarray',{},{params:{channelId:channelId}})
+            const playlistIds = playlistsarray.data.array;
+            const playlists = playlistIds.map(id => ({ PlaylistId: id }));
             const newUser = new User({
                 emailID: email,
+                channelID: channelId,
+                firstName: username,
+                joinedAT: new Date(),
+                lastLogin: new Date(),
+                allPlaylists: playlists
             });
+            console.log(playlistsarray.array)
             const savedUser = await newUser.save();
             console.log(`new is ${savedUser.id}`);
             res.send({ message: { user: savedUser } });

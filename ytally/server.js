@@ -17,7 +17,7 @@ const express = require('express');
   const REDIRECT_URI =  process.env.REDIRECT_URI;
 
   // Scope for accessing YouTube account information
-  const SCOPES = ['https://www.googleapis.com/auth/youtube.readonly'];
+  const SCOPES = ['https://www.googleapis.com/auth/youtube.readonly', 'https://www.googleapis.com/auth/userinfo.email'];
 
   const oauth2Client = new OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
 
@@ -55,9 +55,16 @@ const express = require('express');
       console.log("oauthcallback")
       const username = response.data.items[0].snippet.title;
       const channelId = response.data.items[0].id;
+      const oauth2 = google.oauth2({
+        auth: oauth2Client,
+        version: 'v2'
+      });
+      const userInfo = await oauth2.userinfo.get();
+      const emailId = userInfo.data.email;
+      console.log(`Email is  ${emailId}`);
       //console.log(response);
       //res.send(channelId); 
-      res.redirect(`http://localhost:3000?channelId=${channelId}&username=${username}`);
+      res.redirect(`http://localhost:3000?channelId=${channelId}&username=${username}&emailId=${emailId}`);
       
     }); 
   // Custom routes

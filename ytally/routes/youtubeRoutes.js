@@ -121,6 +121,44 @@ const API_KEY = 'AIzaSyDhngiHaM5o7q_2iQRJgHhGsSqnvtctoLc';
         }
     });
 
+    Route.post('/playlistsarray', async (req, res) => {
+        const channelId = req.query.channelId;
+        if (!channelId) {
+            return res.status(400).json({ error: 'Channel ID is required' });
+        }
+    
+        // Function to get playlists by channel ID
+        async function getPlaylistsByChannelId(channelId) {
+            try {
+                const response = await youtube.playlists.list({
+                    part: 'snippet,contentDetails',
+                    channelId: channelId,
+                    maxResults: 50, // You can adjust the max results according to your needs
+                    key: API_KEY,
+                });
+    
+                if (!response.data.items || response.data.items.length === 0) {
+                    throw new Error('No playlists found for this channel');
+                }
+    
+                const playlistIds = response.data.items.map((playlist) => playlist.id);
+                return playlistIds;
+
+            } catch (error) {
+                console.error('Error getting playlists:', error.message);
+                throw error;
+            }
+        }
+    
+        try {
+            const playlists = await getPlaylistsByChannelId(channelId);
+            console.log(playlists)
+            res.json({'array':playlists});
+        } catch (error) {
+            res.status(200).json({ error: error.message });
+        }
+    });
+
     Route.post('/videos', async (req, res) => {
         const playlistId = req.query.playlistId;
         if (!playlistId) {
