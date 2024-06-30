@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useLocation, useHistory } from 'react-router-dom';
+import { useUser } from './User';
 
 const Homepage = () => {
   const location = useLocation();
-  const history = useHistory();
+  const { userState } = useUser();
   const propsToPass = location.state;
   const email = propsToPass ? propsToPass.email : 'Email not provided';
   const [searchQuery, setSearchQuery] = useState('');
@@ -13,8 +14,6 @@ const Homepage = () => {
   const [editors, setEditors] = useState([]);
   const [selectedEditors, setSelectedEditors] = useState([]);
   const [error, setError] = useState(null);
-  const userDetails = location.state?.userDetails || {};
-  const userEmail = userDetails?.user?.emailID;
   const [username, setUsername] = useState('');
   const [channel, setChannel] = useState('');
   const [channelId, setChannelId] = useState('');
@@ -24,11 +23,10 @@ const Homepage = () => {
    
 
     const saveUserDetails = async () => {
-      const email = userEmail || 'ab3333@gmail.com';
-      const username=location.state?.username;  
+      const email = userState.user?.emailID;
+      const username=userState.user?.firstName;  
 
-      const channelId = location.state?.channelId || 'defaultChannelId';
-      console.log(`username@1-${username},email@1-${email},channelid@1${channelId}`);
+      const channelId = userState.user?.channelId || 'defaultChannelId';
 
       try {
         await axios.post('http://localhost:3001/register', { email, username, channelId });
@@ -39,11 +37,11 @@ const Homepage = () => {
     };
 
     saveUserDetails();
-  }, [userDetails, userEmail, location.state?.channelId, location.search, username]);
+  }, [userState]);
 
   useEffect(() => {
     const fetchPlaylists = async () => {
-      setChannelId(location.state.channelId);
+      setChannelId(channelId);
       if (!channelId) return;
       const params = { channelId };
       const response = await axios.post('http://localhost:3001/Youtube/playlists', {}, { params });
@@ -63,7 +61,7 @@ const Homepage = () => {
     };
 
     fetchPlaylists();
-  }, [channelId, location.state?.channelId]);
+  }, [channelId]);
 
   const handleSearch = async () => {
     try {
@@ -84,7 +82,6 @@ const Homepage = () => {
     console.log('Playlist clicked:', playlistId);
     const params = { playlistId };
     const response = await axios.post('http://localhost:3001/Youtube/videos', {}, { params });
-    console.log(response.data);
     const allVideos = response.data;
     const required = allVideos.map((video) => ({
       title: video.snippet.title,
@@ -115,11 +112,11 @@ const Homepage = () => {
     };
 
   return (
-    <div className="flex flex-row p-4 gap-2 w-full grow-1">
+    <div className="flex  grow flex-row p-4 gap-2 w-full grow-1">
       <div className="flex flex-col basis-1/4 h-full">
         <div className="text-lg font-medium">Channel Name</div>
         <div className="flex border-2"></div>
-        <div>{channel}</div>
+        <div>{userState.user?.channelName}</div> 
 
         <div className="text-lg font-medium">All Playlists</div>
         <div className="flex border-2"></div>
@@ -136,22 +133,8 @@ const Homepage = () => {
       <div className="flex flex-row border-2"></div>
 
       <div className="flex flex-col basis-2/4">
-        <h1 className="text-4xl font-bold mb-4">Welcome to the Home Page! {email || userEmail || location.state.username}</h1>
-
-        <div className="mb-4">
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="p-4 border border-gray-300 rounded w-full"
-          />
-          <button onClick={handleSearch} className="bg-blue-500 text-white p-2 ml-2 rounded">
-            Search
-          </button>
-        </div>
-
-        <div className="flex flex-col gap-y-1">
-          {videos.length === 0 && <div>Please select any playlist</div>}
+        <div className="flex grow flex-col gap-y-1">
+          {videos.length === 0 && <div className="flex grow justify-center items-center">Please select any playlist</div>}
           {videos.map((video) => (
             <div key={video.id} className="flex flex-row">
               <img src={video.imageUrl} alt={video.title} />
@@ -160,6 +143,7 @@ const Homepage = () => {
           ))}
         </div>
       </div>
+      <div className="flex flex-row border-2"></div>
 
       <div className="flex flex-col basis-1/4 h-full">
         <div className="text-lg font-medium">Search Editors</div>

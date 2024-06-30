@@ -1,10 +1,13 @@
 import React, { useEffect,useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
+import { useUser } from './User';
 
 const Login = () => {
   const [channelId, setChannelId] = useState('');
+  const [id,setId]=useState();
   const history=useHistory();
+  const { setUserState,userState } = useUser();
 
   const updateUser=async (email,channelId,username)=>{
     const query={
@@ -14,7 +17,12 @@ const Login = () => {
     }
 
     const response= await axios.post('http://localhost:3001/Users/setPlaylists',{},{params:query})
-    console.log(response.data)
+    const userDetails= await axios.post('http://localhost:3001/Users/get',{emailID:email},{})
+    console.log(userDetails.data.user)
+    setId(userDetails.data.user._id)
+    console.log(id)
+    setUserState({user:userDetails.data.user})
+    //console.log(userState.user)
 }
 
   useEffect(() => {
@@ -22,17 +30,20 @@ const Login = () => {
     const channelId = urlParams.get('channelId');
     const username=urlParams.get('username');
     const emailId=urlParams.get('emailId');
-    if (channelId && username && emailId) {
+    if (channelId && username && emailId!='') {
       setChannelId(channelId);
       console.log(`emailId is`)
       updateUser(emailId,channelId,username)
-      history.push({
-        pathname: '/home',
-        state: { channelId: channelId ,username:username},
-    });
     }
   }, []);
 
+  useEffect(()=>{
+    if(id){
+      history.push({
+        pathname: `/home/${id}`,
+    });
+    }
+  },[id])
 
   const handleLogin = async () => {
     try {

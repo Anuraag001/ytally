@@ -55,6 +55,14 @@ const userSchema = new mongoose.Schema({
         type:String,
         required:false
     },
+    channelName:{
+        type:String,
+        required:false
+    },
+    playlistCount:{
+        type:String,
+        required:false,
+    },
 });
 
 const User = mongoose.model('users', userSchema);
@@ -187,7 +195,9 @@ Route.post('/setPlaylists', async (req, res) => {
                 firstName: username,
                 joinedAT: new Date(),
                 lastLogin: new Date(),
-                allPlaylists: playlists
+                allPlaylists: playlists,
+                channelName:playlistsarray.data.channelName,
+                playlistCount:playlists.length
             });
             console.log(playlistsarray.array)
             const savedUser = await newUser.save();
