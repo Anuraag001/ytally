@@ -26,7 +26,8 @@ const Homepage = () => {
       const email = userState.user?.emailID;
       const username=userState.user?.firstName;  
 
-      const channelId = userState.user?.channelId || 'defaultChannelId';
+      const channelId = userState.user?.channelID || 'defaultChannelId';
+      setChannelId(channelId);
 
       try {
         await axios.post('http://localhost:3001/register', { email, username, channelId });
@@ -41,7 +42,6 @@ const Homepage = () => {
 
   useEffect(() => {
     const fetchPlaylists = async () => {
-      setChannelId(channelId);
       if (!channelId) return;
       const params = { channelId };
       const response = await axios.post('http://localhost:3001/Youtube/playlists', {}, { params });

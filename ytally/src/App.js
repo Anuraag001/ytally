@@ -9,6 +9,8 @@ import HomeHead from './components/homeHeader';
 import Login from './components/AAAuth';
 import { UserProvider } from './components/User';
 import Profile from './components/Profile';
+import EditorHome from './components/EditorHome';
+
 // import Auth from './components/Auth'
 // import ParticleComponent from './components/ParticleComponent';
 const clientId = "201256679523-e5dl5or2n64k1v8bktttrjfmqqfceemc.apps.googleusercontent.com";
@@ -25,7 +27,13 @@ function App() {
             <Header />
               <Users />
             </Route>
-            <Route path="/home/:userID">
+            <Route path="/homeeditor/:userID">
+              {/* Homepage inside the common styling container */}
+              <div className="h-screen  w-full flex flex-col grow-1" style={{ backgroundColor: 'white' }}>
+              <EditorHome />
+              </div>
+            </Route>
+            <Route path="/homeContentCreator/:userID">
               {/* Homepage inside the common styling container */}
               <div className="h-screen  w-full flex flex-col grow-1" style={{ backgroundColor: 'white' }}>
               <AuthenticatedHomepage />

@@ -1,12 +1,25 @@
 import Glogin from './Glogin';
 import { Link, useHistory } from 'react-router-dom';
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import Login from './Login';
+import { useUser } from './User';
+import axios from 'axios';
+
 function Body() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [details, setDetails] = useState({});
+    const [id,setId]=useState();
+    const { setUserState,userState } = useUser();
     const history = useHistory();
+
+    useEffect(()=>{
+        if(id){
+          history.push({
+            pathname: `/homeeditor/${id}`,
+        });
+        }
+      },[id])
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -26,34 +39,16 @@ function Body() {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log(data);
                 setDetails(data);
 
                 // Assuming "Users/get" returns user details after successful login
-                const userDetailsResponse = await fetch("Users/get", {
-                    method: 'post',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formData)
-                });
-
-                if (userDetailsResponse.ok) {
-                    const userDetailsData = await userDetailsResponse.json();
-                    console.log("User Details:", userDetailsData);
-
-                    // Store user details in the state
-                    setDetails(userDetailsData);
-
-                    // Navigate to home with user details in the state
-                    history.push({
-                        pathname: '/home',
-                        state: { userDetails: userDetailsData },
-                    });
-                } else {
-                    // Handle error when fetching user details
-                    console.error("Error fetching user details");
-                }
+                const userDetails= await axios.post('http://localhost:3001/Users/get',{emailID:email},{})
+                console.log(userDetails.data.user)
+                setUserState({user:userDetails.data.user})
+                console.log(userDetails.data.user._id)
+                setId(userDetails.data.user._id)
+                
+                
             } else {
                 const errorData = await response.json();
                 console.log("Not Successful:", errorData);

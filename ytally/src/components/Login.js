@@ -40,7 +40,7 @@ const Login = () => {
   useEffect(()=>{
     if(id){
       history.push({
-        pathname: `/home/${id}`,
+        pathname: `/homeContentCreator/${id}`,
     });
     }
   },[id])
