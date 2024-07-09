@@ -147,8 +147,7 @@ const Homepage = () => {
 
       <div className="flex flex-col basis-1/4 h-full">
         <div className="text-lg font-medium">Search Editors</div>
-        <div className="flex border-2"></div>
-        <div className="mb-4">
+        <div className=" flex flex-row h-10">
           <input
             type="text"
             value={editorSearchQuery}
@@ -156,7 +155,7 @@ const Homepage = () => {
             className="p-4 border border-gray-300 rounded w-full"
           />
           <button onClick={handleEditorSearch} className="bg-blue-500 text-white p-2 ml-2 rounded">
-            Search
+           <img className="object-contain h-6 w-6" src={process.env.PUBLIC_URL + "/search.png"}></img>
           </button>
         </div>
         <div className="flex flex-col gap-y-1">
