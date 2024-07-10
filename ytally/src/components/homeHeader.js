@@ -21,7 +21,7 @@ function HomeHead(){
         });
     }
     return (
-        <div className="flex flex-row gap-x-5 justify-between items-center text-zinc-200 text-lg font-sans m-2">
+        <div className="flex flex-row gap-x-5 justify-between items-center text-zinc-200 text-lg font-sans p-2  bg-pink-200">
             <div className="flex flex-row justify-self-start gap-x-1 text-orange-300"><img src={process.env.PUBLIC_URL + "/youtube.png"} className="object-contain h-7 w-7"></img>YTAlly</div>
             <div className="flex flex-row justify-end gap-x-10">
             <img className="object-contain h-8 w-8 rounded-full border-2 border-stone-950" src={process.env.PUBLIC_URL + "/editors.png"}></img>

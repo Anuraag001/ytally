@@ -112,7 +112,7 @@ const Homepage = () => {
     };
 
   return (
-    <div className="flex  grow flex-row p-4 gap-2 w-full grow-1">
+    <div className="flex  grow flex-row p-4 gap-2 w-full grow-1 bg-pink-100">
       <div className="flex flex-col basis-1/4 h-full">
         <div className="text-lg font-medium">Channel Name</div>
         <div className="flex border-2"></div>

@@ -10,16 +10,16 @@ import Login from './components/AAAuth';
 import { UserProvider } from './components/User';
 import Profile from './components/Profile';
 import EditorHome from './components/EditorHome';
-
+import WebHome from './components/WebHome';
 // import Auth from './components/Auth'
 // import ParticleComponent from './components/ParticleComponent';
 const clientId = "201256679523-e5dl5or2n64k1v8bktttrjfmqqfceemc.apps.googleusercontent.com";
 function App() {
   return (
     <UserProvider>
-    <div className='min-h-screen w-full flex flex-col grow-1'>
+    <div className='flex flex-col max-h-screen'>
       {/* Container for common styles */}
-      <div className="max-h-full w-full p-2 absolute flex flex-col" style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/ba.png)`, backgroundSize: "cover" }}>
+      <div className="flex flex-col max-h-screen">
         <Router>
           <Switch>
           <Route path="/login" component={Login} />
@@ -44,10 +44,8 @@ function App() {
               <Profile />
             </div>
             </Route>
-            <Route path="/">
-              <Header />
-              <Body />
-            </Route>
+             <Route path='/signup' component={Signup} />
+            <Route path="/" component={WebHome} />
           </Switch>
         </Router>
       </div>
@@ -60,7 +58,7 @@ function AuthenticatedHomepage() {
   const { username } = useParams();
 
   return (
-    <div className="h-screen  w-full flex flex-col grow-1" style={{ backgroundColor: 'white' }}>
+    <div className="h-screen  w-full flex flex-col grow-1 bg-pink-100" >
       <HomeHead />
       {/* Render Homepage with username passed as a prop */}
       <Homepage username={username} />

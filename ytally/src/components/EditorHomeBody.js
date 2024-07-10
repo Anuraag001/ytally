@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 
 const Dashboard = () => {
   const [connectionsTab, setConnectionsTab] = useState(true);
-  const [requestsTab, setRequestsTab] = useState(false);
+  const [requestsTab, setRequestsTab] = useState(true);
 
   return (
-    <div className="flex flex-row basis-1 grow">
-      <div className="flex basis-5/6 bg-red-100">one</div>
+    <div className="flex flex-row basis-1 grow bg-red-100">
+      <div className="flex basis-5/6 ">Editors Dashboard</div>
       <div className="flex basis-1/6 flex-col mx-2">
         <div className="flex flex-col gap-y-5">
             <div className='bg-slate-200 py-1'>
