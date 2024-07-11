@@ -4,13 +4,14 @@ import { useUser } from './User';
 import axios from 'axios';
 import Login from './Login';
 
-function SignIn(){
+function SignIn({showSignIn}){
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [details, setDetails] = useState({});
     const [id,setId]=useState();
     const { setUserState,userState } = useUser();
     const history = useHistory();
+    const [isVisible, setIsVisible] = useState(false);
 
     useEffect(()=>{
         if(id){
@@ -58,17 +59,27 @@ function SignIn(){
             setDetails({ color: 'text-red-500', message: 'An error occurred while processing your request.' });
         }
     }
+
+    useEffect(() => {
+        if (showSignIn) {
+            setIsVisible(true); // Set visibility to true when showSignIn is true
+        } else {
+            setIsVisible(false); // Set visibility to false when showSignIn is false
+        }
+    }, [showSignIn]);
+
+
     return(
         <>
-        <div className="group flex flex-row justify-center items-center ">
-            <div className="absolute transition duration-300 ease-out p-8 rounded shadow-md w-96 w-96 border-2 border-white">
+        <div className={`group flex flex-row justify-center items-center transition-opacity duration-700 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
+            <div className="absolute  p-8 rounded shadow-md w-96 w-96 border-2 border-white">
                 <div className='absolute inset-0 z-3 bg-white opacity-20'></div>
                 <div className='relative inset-0 z-4'>
                 <div className="text-center mb-6">
                     <h2 className="flex flex-row text-2xl font-semibold text-white justify-center">Sign In</h2>
                 </div>
 
-                <form onSubmit={handleSubmit} className="transition duration-300 ease-out">
+                <form onSubmit={handleSubmit}>
                     <div className={details.color}>{details.message}</div>
                     <div className="mb-4">
                         <label htmlFor="email" className="block text-white text-sm font-medium mb-2">Email</label>

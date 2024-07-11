@@ -9,7 +9,7 @@ function Body({showSignIn}) {
         <div className='text-3xl font-bold'> Welcome To YTAlly !</div>
         <div className='text-xl font-normal'>Connect editors and content creators</div>
         </div>
-        <div className='flex'>{showSignIn?<SignIn />:<Signup />}</div>
+        <div className='flex'>{showSignIn?<SignIn showSignIn={showSignIn}/>:<Signup showSignIn={showSignIn} />}</div>
         
         
         </div>

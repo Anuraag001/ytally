@@ -2,8 +2,23 @@ const express=require('express')
 const mongoose=require('mongoose')
 const DOTENV=require('dotenv')
 const axios = require('axios');
+const path = require('path');
+const fs = require('fs');
+const multer = require('multer');
 const uri=DOTENV.config().parsed.MONGO_URI
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true,serverSelectionTimeoutMS:5000000 });
+
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, './uploads'); // Uploads directory
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname); // Use original filename
+    }
+});
+
+const upload = multer({ storage: storage });
 
 const editorSchema=new mongoose.Schema({
     emailID:{
@@ -65,7 +80,20 @@ const userSchema = new mongoose.Schema({
     },
 });
 
+const fileSchema =new mongoose.Schema({
+    userId:{
+        type:String,
+        required:false
+    },
+    profileImage:{
+        type:Buffer,
+        required:false,
+    },
+
+});
+
 const User = mongoose.model('users', userSchema);
+const userFiles=mongoose.model('userFiles',fileSchema);
 const Route=express.Router()
 
 
@@ -207,6 +235,52 @@ Route.post('/setPlaylists', async (req, res) => {
     } catch (error) {
         console.error("Error occurred:", error);
         res.status(500).json({ message: "Internal Server Error", error: error.message });
+    }
+})
+
+
+Route.post('/uploadprofile', upload.single('file'), async (req, res) => {
+    try {
+        const { userId } = req.body; // Assuming userId is sent in req.body
+        const imagePath = path.join(__dirname, '../uploads/', req.file.filename);
+
+        // Save image to MongoDB
+        const image = new userFiles({
+            filename: req.file.filename,
+            profileImage: fs.readFileSync(imagePath),
+            userId: userId // Assuming userId is a field in your userFiles schema
+        });
+
+        const savedImage = await image.save();
+
+        // Delete the file after saving to MongoDB (optional)
+        fs.unlinkSync(imagePath);
+
+        console.log('Image saved:', savedImage); // Log the saved image document to console
+
+        // Send the ID of the saved image document as a response
+        res.status(200).json({ id: savedImage._id });
+    } catch (error) {
+        console.error('Error uploading file:', error);
+        res.status(500).send('Error uploading file.');
+    }
+});
+
+Route.get('/getProfile',async (req,res) =>{
+    try {
+        const fileId = req.query.id;
+        const file = await userFiles.findById(fileId);
+
+        if (!file) {
+            return res.status(404).send('File not found.');
+        }
+
+        // Send the image data as a response
+        res.set('Content-Type', 'image/jpeg'); // Adjust content type based on your image format
+        res.send(file.profileImage);
+    } catch (error) {
+        console.error('Error retrieving file:', error);
+        res.status(500).send('Error retrieving file.');
     }
 })
 

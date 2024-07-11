@@ -1,8 +1,10 @@
-  import React, { useState } from 'react';
+  import React, { useState,useEffect } from 'react';
   import Glogin from './Glogin.js';
   import { useLocation,useHistory } from 'react-router-dom';
+  import { useUser } from './User';
+  import axios from 'axios';
 
-  const Signup = () => {
+  const Signup = ({showSignIn}) => {
     const [email, setEmail] = useState('');
     const [first, setFirst] = useState('');
     const [last, setLast] = useState('');
@@ -11,6 +13,26 @@
     const [details,setDetails]=useState({})
     const [signupSuccess, setSignupSuccess] = useState(false); // New state
     const history=useHistory();
+    const [isVisible, setIsVisible] = useState(false);
+    const { setUserState,userState } = useUser();
+    const [id,setId]=useState();
+
+    useEffect(()=>{
+      if(id){
+        history.push({
+          pathname: `/homeeditor/${id}`,
+      });
+      }
+    },[id])
+
+    useEffect(() => {
+      if (showSignIn) {
+          setIsVisible(false); // Set visibility to true when showSignIn is true
+      } else {
+          setIsVisible(true); // Set visibility to false when showSignIn is false
+      }
+  }, [showSignIn]);
+
     const handleSubmit = async (e) => {
       e.preventDefault();
       console.log('Form submitted:', { first, last, email, password, confirmPassword });
@@ -40,15 +62,12 @@
           setSignupSuccess(true);
           
           // Set props to be passed to the home component
-          const propsToPass = {
-              email: email // Pass the email as a prop
-          };
+          const userDetails= await axios.post('http://localhost:3001/Users/get',{emailID:email},{})
+                console.log(userDetails.data.user)
+                setUserState({user:userDetails.data.user})
+                console.log(userDetails.data.user._id)
+                setId(userDetails.data.user._id)
       
-          setTimeout(() => {
-              history.push({
-                  pathname: '/home',
-              });  
-          }, 1000);
       
         } else {
           const errorData = await response.json();
@@ -67,7 +86,7 @@
     
 
     return (
-      <div className="group flex flex-row justify-center items-center ">
+      <div className={`group flex flex-row justify-center items-center transition-opacity duration-700 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
       <div className="absolute transition duration-300 ease-out p-8 rounded shadow-md w-96 border-2 border-white">
           <div className='absolute inset-0 z-3 bg-white opacity-20'></div>
           <div className='relative inset-0 z-4'>
