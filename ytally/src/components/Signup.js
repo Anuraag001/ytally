@@ -16,7 +16,7 @@
     const [isVisible, setIsVisible] = useState(false);
     const { setUserState,userState } = useUser();
     const [id,setId]=useState();
-
+  
     useEffect(()=>{
       if(id){
         history.push({

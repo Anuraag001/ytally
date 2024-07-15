@@ -27,13 +27,13 @@ function App() {
             <Header />
               <Users />
             </Route>
-            <Route path="/homeeditor/:userID">
+            <Route path="/homeeditor/:userId">
               {/* Homepage inside the common styling container */}
               <div className="h-screen  w-full flex flex-col grow-1" style={{ backgroundColor: 'white' }}>
               <EditorHome />
               </div>
             </Route>
-            <Route path="/homeContentCreator/:userID">
+            <Route path="/homeContentCreator/:userId">
               {/* Homepage inside the common styling container */}
               <div className="h-screen  w-full flex flex-col grow-1" style={{ backgroundColor: 'white' }}>
               <AuthenticatedHomepage />

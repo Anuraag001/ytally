@@ -78,6 +78,10 @@ const userSchema = new mongoose.Schema({
         type:String,
         required:false,
     },
+    fileId:{
+        type:String,
+        required:false,
+    }
 });
 
 const fileSchema =new mongoose.Schema({
@@ -100,7 +104,24 @@ const Route=express.Router()
 Route.get('/all',async (req,res)=>{
     const allUsers=await User.find({})
     res.json(allUsers)
-})
+}); 
+
+Route.post('/getById', async (req, res) => {
+    try {
+        const data = req.body;
+        const userdetails = await User.findById(data.id);
+
+        if (userdetails) {
+            res.status(200).json({  user: userdetails });
+        } else {
+            res.status(404).json({ message: "User not found", color: "text-orange-900" });
+        }
+    } catch (error) {
+        console.error("Error occurred:", error);
+        res.status(500).json({ message: "Internal Server Error", color: "text-red-500" });
+    }
+});
+
 Route.post('/get', async (req, res) => {
     try {
         const data = req.body;
@@ -116,6 +137,10 @@ Route.post('/get', async (req, res) => {
         res.status(500).json({ message: "Internal Server Error", color: "text-red-500" });
     }
 });
+
+
+
+
 Route.post('/editors/search', async (req, res) => {
     try {
         const { email } = req.body;
@@ -244,27 +269,38 @@ Route.post('/uploadprofile', upload.single('file'), async (req, res) => {
         const { userId } = req.body; // Assuming userId is sent in req.body
         const imagePath = path.join(__dirname, '../uploads/', req.file.filename);
 
-        // Save image to MongoDB
-        const image = new userFiles({
-            filename: req.file.filename,
-            profileImage: fs.readFileSync(imagePath),
-            userId: userId // Assuming userId is a field in your userFiles schema
-        });
+        // Read the image file
+        const profileImage = fs.readFileSync(imagePath);
 
-        const savedImage = await image.save();
+        // Check if a userFile with the given userId already exists
+        let userFile = await userFiles.findOneAndUpdate(
+            { userId: userId },
+            {
+                profileImage: profileImage
+            },
+            { new: true, upsert: true }
+        );
+
+        let userupdate= await User.findByIdAndUpdate(
+            userId,
+            {fileId:userFile._id},
+            {new: true}
+        )
+        
 
         // Delete the file after saving to MongoDB (optional)
         fs.unlinkSync(imagePath);
 
-        console.log('Image saved:', savedImage); // Log the saved image document to console
+        console.log('Image saved:', userFile); // Log the saved image document to console
 
         // Send the ID of the saved image document as a response
-        res.status(200).json({ id: savedImage._id });
+        res.status(200).json({ id: userFile._id });
     } catch (error) {
         console.error('Error uploading file:', error);
         res.status(500).send('Error uploading file.');
     }
 });
+
 
 Route.get('/getProfile',async (req,res) =>{
     try {
