@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useLocation, useHistory } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useUser } from './User';
 
 const Homepage = () => {
@@ -18,34 +18,17 @@ const Homepage = () => {
   const [channel, setChannel] = useState('');
   const [channelId, setChannelId] = useState('');
   const [playlists, setPlaylists] = useState([]);
+  const [isResizing, setIsResizing] = useState(false);
+  const [columnWidths, setColumnWidths] = useState([25, 50, 25]); // Percentage widths for three columns
+  const [startX, setStartX] = useState(0);
+  const [startWidths, setStartWidths] = useState([25, 50, 25]); // Initial widths
 
-  useEffect(() => {
-   
-
-    const saveUserDetails = async () => {
-      const email = userState.user?.emailID;
-      const username=userState.user?.firstName;  
-
-      const channelId = userState.user?.channelID || 'defaultChannelId';
-      setChannelId(channelId);
-
-      try {
-        await axios.post('http://localhost:3001/register', { email, username, channelId });
-        console.log('User details saved successfully');
-      } catch (error) {
-        console.error('Error saving user details:', error.message);
-      }
-    };
-
-    saveUserDetails();
-  }, [userState]);
 
   useEffect(() => {
     const fetchPlaylists = async () => {
       if (!channelId) return;
       const params = { channelId };
       const response = await axios.post('http://localhost:3001/Youtube/playlists', {}, { params });
-      console.log(response.data);
       if (response.data.error === 'No playlists found for this channel') {
         setPlaylists([]);
         return;
@@ -56,7 +39,6 @@ const Homepage = () => {
         id: playlist.id,
         imageUrl: playlist.snippet.thumbnails.default.url,
       }));
-      console.log(required);
       setPlaylists(required);
     };
 
@@ -79,7 +61,6 @@ const Homepage = () => {
   };
 
   const handlePlaylistClick = async (playlistId) => {
-    console.log('Playlist clicked:', playlistId);
     const params = { playlistId };
     const response = await axios.post('http://localhost:3001/Youtube/videos', {}, { params });
     const allVideos = response.data;
@@ -91,29 +72,66 @@ const Homepage = () => {
     setVideos(required);
   };
 
-    const handleEditorSearch = async () => {
-      try {
-        const response = await axios.post('http://localhost:3001/Users/editors/search', { email: editorSearchQuery });
-        if (response.data && response.data.user) {
-          setEditors([response.data.user]);
-          setError(null);
-        } else {
-          setError('No editors found');
-        }
-      } catch (error) {
-        console.error('Error searching for editors:', error.message);
-        setError('Error searching for editors');
+  const handleEditorSearch = async () => {
+    try {
+      const response = await axios.post('http://localhost:3001/Users/editors/search', { email: editorSearchQuery });
+      if (response.data && response.data.user) {
+        setEditors([response.data.user]);
+        setError(null);
+      } else {
+        setError('No editors found');
       }
-    };
+    } catch (error) {
+      console.error('Error searching for editors:', error.message);
+      setError('Error searching for editors');
+    }
+  };
 
-    const handleAddEditor = (editor) => {
-      setSelectedEditors((prevSelectedEditors) => [...prevSelectedEditors, editor]);
+  const handleAddEditor = (editor) => {
+    setSelectedEditors((prevSelectedEditors) => [...prevSelectedEditors, editor]);
+  };
 
+  const handleMouseDown = (index, e) => {
+    setIsResizing(true);
+    setStartX(e.clientX);
+    setStartWidths([...columnWidths]);
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isResizing) return;
+
+    const dx =startX- e.clientX;
+    const totalWidth = 100;
+    const newWidths = [...startWidths];
+    
+      newWidths[1] = Math.min(65,startWidths[1] + (dx / window.innerWidth) * totalWidth);
+      newWidths[0] = totalWidth - newWidths[1] - newWidths[2];
+    
+    setColumnWidths(newWidths);
+  };
+
+  const handleMouseUp = () => {
+    setIsResizing(false);
+  };
+
+  useEffect(() => {
+    if (isResizing) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    } else {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
     };
+  }, [isResizing]);
 
   return (
-    <div className="flex  grow flex-row p-4 gap-2 w-full grow-1 bg-pink-100">
-      <div className="flex flex-col basis-1/4 h-full">
+    <div className="flex h-screen">
+      <div className="flex flex-col h-full" style={{ width: `${columnWidths[0]}%` }}>
         <div className="text-lg font-medium">Channel Name</div>
         <div className="flex border-2"></div>
         <div>{userState.user?.channelName}</div> 
@@ -130,9 +148,12 @@ const Homepage = () => {
         </div>
       </div>
 
-      <div className="flex flex-row border-2"></div>
+      <div
+        className="cursor-col-resize flex-shrink-0 border-2"
+        onMouseDown={(e) => handleMouseDown(1, e)}
+      ></div>
 
-      <div className="flex flex-col basis-2/4">
+      <div className="flex flex-col h-full" style={{ width: `${columnWidths[1]}%` }}>
         <div className="flex grow flex-col gap-y-1">
           {videos.length === 0 && <div className="flex grow justify-center items-center">Please select any playlist</div>}
           {videos.map((video) => (
@@ -143,11 +164,12 @@ const Homepage = () => {
           ))}
         </div>
       </div>
-      <div className="flex flex-row border-2"></div>
 
-      <div className="flex flex-col basis-1/4 h-full">
+      <div className="flex-shrink-0 border-2"></div>
+
+      <div className="flex flex-col h-full" style={{ width: `${columnWidths[2]}%` }}>
         <div className="text-lg font-medium">Search Editors</div>
-        <div className=" flex flex-row h-10">
+        <div className="flex flex-row h-10">
           <input
             type="text"
             value={editorSearchQuery}
@@ -155,7 +177,7 @@ const Homepage = () => {
             className="p-4 border border-gray-300 rounded w-full"
           />
           <button onClick={handleEditorSearch} className="bg-blue-500 text-white p-2 ml-2 rounded">
-           <img className="object-contain h-6 w-6" src={process.env.PUBLIC_URL + "/search.png"}></img>
+            <img className="object-contain h-6 w-6" src={process.env.PUBLIC_URL + "/search.png"} alt="Search"/>
           </button>
         </div>
         <div className="flex flex-col gap-y-1">

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Switch,useParams  } from 'react-router-dom';
 import Header from './components/Header_';
 import Signup from './components/Signup';
@@ -11,6 +11,8 @@ import { UserProvider } from './components/User';
 import Profile from './components/Profile';
 import EditorHome from './components/EditorHome';
 import WebHome from './components/WebHome';
+import { useUser } from './components/User';
+import axios from 'axios';
 // import Auth from './components/Auth'
 // import ParticleComponent from './components/ParticleComponent';
 const clientId = "201256679523-e5dl5or2n64k1v8bktttrjfmqqfceemc.apps.googleusercontent.com";
@@ -55,13 +57,24 @@ function App() {
 }
 function AuthenticatedHomepage() {
   // Extract username from query parameters
-  const { username } = useParams();
+  const { id } = useParams();
+  const { userState,setUserState } = useUser();
+
+  useEffect(()=>{
+    const updateContext=async ()=>{
+    if(id!=userState.user?._id){
+      const response = await axios.post('http://localhost:3001/Users/getById', { id: id });
+      setUserState({ user: response.data.user});
+    }
+  }
+  updateContext();
+  },[id,useUser])
 
   return (
     <div className="h-screen  w-full flex flex-col grow-1 bg-pink-100" >
       <HomeHead />
       {/* Render Homepage with username passed as a prop */}
-      <Homepage username={username} />
+      <Homepage username={id} />
     </div>
   );
 }
