@@ -16,12 +16,14 @@ const Homepage = () => {
   const [error, setError] = useState(null);
   const [username, setUsername] = useState('');
   const [channel, setChannel] = useState('');
-  const [channelId, setChannelId] = useState('');
+  const channelId=userState.user?.channelID;
   const [playlists, setPlaylists] = useState([]);
+  const [playlist,selectedPlaylist]=useState("");
   const [isResizing, setIsResizing] = useState(false);
   const [columnWidths, setColumnWidths] = useState([25, 50, 25]); // Percentage widths for three columns
   const [startX, setStartX] = useState(0);
   const [startWidths, setStartWidths] = useState([25, 50, 25]); // Initial widths
+
 
 
   useEffect(() => {
@@ -40,10 +42,11 @@ const Homepage = () => {
         imageUrl: playlist.snippet.thumbnails.default.url,
       }));
       setPlaylists(required);
+      console.log(playlists);
     };
 
     fetchPlaylists();
-  }, [channelId]);
+  }, [channelId,userState]);
 
   const handleSearch = async () => {
     try {
@@ -62,6 +65,7 @@ const Homepage = () => {
 
   const handlePlaylistClick = async (playlistId) => {
     const params = { playlistId };
+    selectedPlaylist(params);
     const response = await axios.post('http://localhost:3001/Youtube/videos', {}, { params });
     const allVideos = response.data;
     const required = allVideos.map((video) => ({
@@ -70,6 +74,7 @@ const Homepage = () => {
       imageUrl: video.snippet.thumbnails.default.url,
     }));
     setVideos(required);
+    console.log(videos);
   };
 
   const handleEditorSearch = async () => {
@@ -104,7 +109,7 @@ const Homepage = () => {
     const totalWidth = 100;
     const newWidths = [...startWidths];
     
-      newWidths[1] = Math.min(65,startWidths[1] + (dx / window.innerWidth) * totalWidth);
+      newWidths[1] = Math.min(60,Math.max(35,startWidths[1] + (dx / window.innerWidth) * totalWidth));
       newWidths[0] = totalWidth - newWidths[1] - newWidths[2];
     
     setColumnWidths(newWidths);
@@ -140,7 +145,7 @@ const Homepage = () => {
         <div className="flex border-2"></div>
         <div className="flex flex-col gap-y-1">
           {playlists.map((playlist) => (
-            <div key={playlist.id} className="flex flex-row" onClick={() => handlePlaylistClick(playlist.id)}>
+            <div key={playlist.id} className="flex flex-row " onClick={() => handlePlaylistClick(playlist.id)}>
               <img src={playlist.imageUrl} className="h-6" alt={playlist.title} />
               <div className="text-s">{playlist.title}</div>
             </div>
@@ -155,7 +160,8 @@ const Homepage = () => {
 
       <div className="flex flex-col h-full" style={{ width: `${columnWidths[1]}%` }}>
         <div className="flex grow flex-col gap-y-1">
-          {videos.length === 0 && <div className="flex grow justify-center items-center">Please select any playlist</div>}
+          {videos.length === 0 && playlist && <div className="flex grow justify-center items-center">Playlist has no videos</div>}
+          {videos.length === 0 && !playlist && <div className="flex grow justify-center items-center">Please select any playlist</div>}
           {videos.map((video) => (
             <div key={video.id} className="flex flex-row">
               <img src={video.imageUrl} alt={video.title} />

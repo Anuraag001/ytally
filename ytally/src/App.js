@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Switch,useParams  } from 'react-router-dom';
 import Header from './components/Header_';
 import Signup from './components/Signup';
@@ -57,24 +57,25 @@ function App() {
 }
 function AuthenticatedHomepage() {
   // Extract username from query parameters
-  const { id } = useParams();
+  const { userId } = useParams();
   const { userState,setUserState } = useUser();
 
   useEffect(()=>{
     const updateContext=async ()=>{
-    if(id!=userState.user?._id){
-      const response = await axios.post('http://localhost:3001/Users/getById', { id: id });
+    if(userId!=userState.user?._id){
+      console.log(userId);
+      const response = await axios.post('http://localhost:3001/Users/getById', { id: userId });
       setUserState({ user: response.data.user});
     }
   }
   updateContext();
-  },[id,useUser])
+  },[userId,useState])
 
   return (
     <div className="h-screen  w-full flex flex-col grow-1 bg-pink-100" >
       <HomeHead />
       {/* Render Homepage with username passed as a prop */}
-      <Homepage username={id} />
+      <Homepage username={userId} />
     </div>
   );
 }

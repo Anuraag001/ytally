@@ -68,11 +68,11 @@ function HomeHead(){
     }, [id]);
 
     return (
-        <div className="flex flex-row gap-x-5 justify-between items-center text-zinc-200 text-lg font-sans p-2  bg-pink-200">
+        <div className="flex flex-row w gap-x-5 justify-between items-center text-zinc-200 text-lg font-sans p-2  bg-pink-200">
             <div className="flex flex-row justify-self-start gap-x-1 text-orange-300"><img src={process.env.PUBLIC_URL + "/youtube.png"} className="object-contain h-7 w-7"></img>YTAlly</div>
-            <div className="flex flex-row justify-end gap-x-10">
+            <div className="flex flex-row justify-around gap-x-10 basis-1/2">
+            <div className='flex flex-row gap-x-20'>
             <img className="object-contain h-8 w-8 rounded-full border-2 border-stone-950" src={process.env.PUBLIC_URL + "/editors.png"}></img>
-            <div className='flex flex-row'><img className="object-contain h-8 w-8" src={process.env.PUBLIC_URL + "/email.png"}></img><div className='text-black text-xs  self-end rounded-full border border-stone-950 px-1'>4</div></div>
             <div className="flex flex-row gap-2" onClick={handleProfile}>
             <div className="h-8 w-8 overflow-hidden rounded-full">
             <img className="object-cover h-full w-full" src={imageUrl ? imageUrl : `${process.env.PUBLIC_URL}/profile.png`} alt="Profile"/>
@@ -82,6 +82,10 @@ function HomeHead(){
                     <div>{userState.user?.emailID}</div>
                 </div>
             </div>
+            <div className='flex flex-row'><img className="object-contain h-8 w-8" src={process.env.PUBLIC_URL + "/email.png"}></img><div className='text-black text-xs  self-end rounded-full border border-stone-950 px-1'>4</div></div>
+            </div>
+            </div>
+            <div>
             <img className="object-contain h-8 w-8" src={process.env.PUBLIC_URL + "/sign-out.png"} onClick={handleSignOut}></img>
             </div>
         </div>

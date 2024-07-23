@@ -195,7 +195,7 @@ const API_KEY = 'AIzaSyDhngiHaM5o7q_2iQRJgHhGsSqnvtctoLc';
                 });
     
                 if (!response.data.items || response.data.items.length === 0) {
-                    throw new Error('No videos found for this playlist');
+                    return [];
                 }
     
                 return response.data.items;
