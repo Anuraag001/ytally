@@ -38,6 +38,12 @@ function HomeHead(){
         });
     }
 
+    const handleRec =()=>{
+        history.push({
+            pathname: `/homeContentCreator/rec/${userState.user.firstName}`,
+        });
+    }
+
     const handleSignOut=()=>{
         history.push({
             pathname: `/`,
@@ -83,6 +89,7 @@ function HomeHead(){
                 </div>
             </div>
             <div className='flex flex-row'><img className="object-contain h-8 w-8" src={process.env.PUBLIC_URL + "/email.png"}></img><div className='text-black text-xs  self-end rounded-full border border-stone-950 px-1'>4</div></div>
+            <div className='flex flex-row' onClick={handleRec}><img className="object-contain h-8 w-8" src={process.env.PUBLIC_URL + "/rec.png"}></img></div>
             </div>
             </div>
             <div>

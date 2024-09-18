@@ -12,6 +12,7 @@ import Profile from './components/Profile';
 import EditorHome from './components/EditorHome';
 import WebHome from './components/WebHome';
 import { useUser } from './components/User';
+import ViewRec from './components/viewrec';
 import axios from 'axios';
 // import Auth from './components/Auth'
 // import ParticleComponent from './components/ParticleComponent';
@@ -33,6 +34,12 @@ function App() {
               {/* Homepage inside the common styling container */}
               <div className="h-screen  w-full flex flex-col grow-1" style={{ backgroundColor: 'white' }}>
               <EditorHome />
+              </div>
+            </Route>
+            <Route path="/homeContentCreator/rec/:username">
+              {/* Homepage inside the common styling container */}
+              <div className="h-screen  w-full flex flex-col grow-1" style={{ backgroundColor: 'white' }}>
+              <ViewRec />
               </div>
             </Route>
             <Route path="/homeContentCreator/:userId">

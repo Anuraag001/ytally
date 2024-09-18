@@ -5,6 +5,7 @@ const axios = require('axios');
 const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
+const { type } = require('os');
 const uri=DOTENV.config().parsed.MONGO_URI
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true,serverSelectionTimeoutMS:5000000 });
 
@@ -34,6 +35,54 @@ const playListSchema=new mongoose.Schema({
         editors:[editorSchema]
     }
 })
+
+const profileDetailsSchema=new mongoose.Schema({
+    userId:{
+        type:String,
+        required:true,
+    },
+    profileDescription:{
+        type:String,
+        required:false
+    },
+    contentCreationExperience:{
+        type:String,
+        required:false
+    },
+    skills:{
+        type:String,
+        required:false
+    },
+    achievements:{
+        type:String,
+        required:false
+    },
+    openToWork:{
+        type:Boolean,
+        default:false,
+    }
+
+})
+
+const openToWorkSchema=new mongoose.Schema({
+    userId:{
+        type:String,
+        required:true
+    },
+    firstName:{
+        type:String,
+        required:true
+    },
+    lastName:{
+        type:String,
+        required:true
+    },
+    description:{
+        type:String,
+        required:true
+    },
+})
+
 const userSchema = new mongoose.Schema({
     firstName:{
         type:String,
@@ -81,6 +130,10 @@ const userSchema = new mongoose.Schema({
     fileId:{
         type:String,
         required:false,
+    },
+    detailsId:{
+        type:String,
+        required:false,
     }
 });
 
@@ -98,6 +151,9 @@ const fileSchema =new mongoose.Schema({
 
 const User = mongoose.model('users', userSchema);
 const userFiles=mongoose.model('userFiles',fileSchema);
+const ProfileDetails=mongoose.model('profileDetails',profileDetailsSchema);
+const OpenToWork=mongoose.model('openToWork',openToWorkSchema);
+
 const Route=express.Router()
 
 
@@ -319,5 +375,91 @@ Route.get('/getProfile',async (req,res) =>{
         res.status(500).send('Error retrieving file.');
     }
 })
+
+Route.post('/updateProfile', async (req, res) => {
+    const { userId, profileDescription, contentCreationExperience, skills, achievements, openToWork } = req.body;
+
+    try {
+        // Find and update the profile details, or create a new one if it doesn't exist
+        const updatedProfile = await ProfileDetails.findOneAndUpdate(
+            { userId: userId }, // Find the profile by userId
+            {
+                profileDescription: profileDescription,
+                contentCreationExperience: contentCreationExperience,
+                skills: skills,
+                achievements: achievements,
+                openToWork: openToWork // Include openToWork field
+            },
+            { new: true, upsert: true } // Create document if not found, and return updated document
+        );
+
+        // Update the user's detailsId field with the _id of the profile details
+        const updatedUser = await User.findOneAndUpdate(
+            { _id: userId }, // Find the user by _id
+            { detailsId: updatedProfile._id }, // Set the detailsId to the updated profile's _id
+            { new: true }
+        );
+
+        res.status(200).json({
+            message: 'Profile and user updated successfully',
+            profile: updatedProfile,
+            user: updatedUser
+        });
+    } catch (error) {
+        console.error('Error updating profile or user:', error);
+        res.status(500).json({ message: 'Failed to update profile or user', error });
+    }
+});
+
+Route.get('/getProfileDetails', async (req, res) => {
+    try {
+        const { id } = req.query; // Get the profile details ID from the query parameters
+
+        if (!id) {
+            return res.status(400).json({ error: 'detailsId is required' });
+        }
+
+        // Fetch the profile details using the ID
+        const profileDetails = await ProfileDetails.findById(id);
+
+        if (!profileDetails) {
+            return res.status(404).json({ error: 'Profile details not found' });
+        }
+
+        res.status(200).json(profileDetails);
+    } catch (error) {
+        console.error('Error fetching profile details:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+Route.get('/openToWork/all', async (req, res) => {
+    try {
+        const users = await OpenToWork.find({});
+        res.status(200).json(users);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching data' });
+    }
+});
+
+Route.post('/openToWork/set', async (req, res) => {
+    const { userId, firstName, lastName, description } = req.body;
+
+    try {
+        const openToWorkEntry = new OpenToWork({
+            userId: userId,
+            firstName: firstName,
+            lastName: lastName,
+            description: description
+        });
+
+        await openToWorkEntry.save();
+        res.status(200).json({ message: 'User added to OpenToWork collection successfully' });
+    } catch (error) {
+        console.error('Error saving to OpenToWork collection:', error);  // Log the error
+        res.status(500).json({ error: 'Error saving to OpenToWork collection' });
+    }
+});
+
 
 module.exports=Route
