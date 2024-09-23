@@ -22,7 +22,7 @@ const Login = () => {
     setId(userDetails.data.user._id)
     console.log(id)
     setUserState({user:userDetails.data.user})
-    //console.log(userState.user)
+    console.log(`sanjkdnsajkn${userState.user}`)
 }
 
   useEffect(() => {

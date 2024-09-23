@@ -6,10 +6,9 @@ const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
 const { type } = require('os');
+const { ConnectionClosedEvent } = require('mongodb');
 const uri=DOTENV.config().parsed.MONGO_URI
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true,serverSelectionTimeoutMS:5000000 });
-
-
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, './uploads'); // Uploads directory
@@ -27,6 +26,22 @@ const editorSchema=new mongoose.Schema({
         required:false
     }
 })
+const connections=new mongoose.Schema({
+    editoremail:{
+        type:String,
+        required:true,
+        unique:true,
+    },
+    creatorname:{
+        type:String,
+        required:true,
+        unique:true,
+    },
+    creatoremail:{
+        type:String,
+        required:true,
+    }
+})
 const editorandadmin=new mongoose.Schema({
 
     editoremail:{
@@ -37,11 +52,16 @@ const editorandadmin=new mongoose.Schema({
     playlistId:{
         type:String,
         required:true,
-        unique:true,
+        // unique:true,
     },
     creatoremail:{
         type:String,
         required:true,
+    },
+    joinedAT:{
+        type:Date,
+        default:Date.now
+    
     }
 })
 const playListSchema=new mongoose.Schema({
@@ -114,21 +134,43 @@ const fileSchema =new mongoose.Schema({
     },
 
 });
-
 const User = mongoose.model('users', userSchema);
 const Req=mongoose.model('req',editorandadmin);
+const ApprovedCreator=mongoose.model('conns',editorandadmin);
 const userFiles=mongoose.model('userFiles',fileSchema);
 const Route=express.Router()
-
-
 Route.get('/all',async (req,res)=>{
     const allUsers=await User.find({})
     res.json(allUsers)
 }); 
+Route.get('/allconn',async (req,res)=>{
+    const allUsers=await ApprovedCreator.find({})
+    res.json(allUsers);
+}); 
+
 Route.get('/allreqs',async (req,res)=>{
     const allUsers=await Req.find({})
     res.json(allUsers)
 }); 
+Route.post('/creatorsrequests', async (req, res) => {
+    const editoremail = req.body.emailID;
+    // console.log(creatoremail);
+    const requests = await Req.find(
+        { editoremail }
+    );
+
+    res.status(200).json({ requests });
+});
+Route.post('/connections', async (req, res) => {
+    const editoremail= req.body.email;
+    // console.log(creatoremail);
+    const connections = await ApprovedCreator.find(
+        { editoremail}
+    );
+
+    res.status(200).json({ connections });
+});
+
 
 Route.post('/getById', async (req, res) => {
     try {
@@ -145,7 +187,6 @@ Route.post('/getById', async (req, res) => {
         res.status(500).json({ message: "Internal Server Error", color: "text-red-500" });
     }
 });
-
 Route.post('/get', async (req, res) => {
     try {
         const data = req.body;
@@ -161,10 +202,6 @@ Route.post('/get', async (req, res) => {
         res.status(500).json({ message: "Internal Server Error", color: "text-red-500" });
     }
 });
-
-
-
-
 Route.post('/editors/search', async (req, res) => {
     try {
         const { email } = req.body;
@@ -193,9 +230,12 @@ Route.post('/check',async (req,res)=>{
         res.status(404).json({message:"No User Found",color:"text-orange-900"})
     }
 })
-Route.get('/api/requests',async(req,res)=>{
-    const response=await Req.fi
-})
+
+// ?????fix 
+
+// Route.get('/api/requests',async(req,res)=>{
+//     const response=await Req.fi
+// })
 Route.post('/add',async (req,res)=>{
     const data=req.body
 
@@ -254,31 +294,31 @@ Route.patch('/update', async (req, res)=>{
         res.status(404).json({message:"User not found"})
     }
 });
-Route.post('/addEditorToPlaylist', async (req, res) => {
-    const {emailId,playlistId ,editorEmail } = req.body;
-    const existingreq=await Req.findOne({editoremail:emailId});
-    if(existingreq){
-        existingreq.playlistId.push(playlistId);
-        existingreq.creatoremail.push(emailId);
+// Route.post('/addEditorToPlaylist', async (req, res) => {
+//     const {emailId,playlistId ,editorEmail } = req.body;
+//     const existingreq=await Req.findOne({editoremail:emailId});
+//     if(existingreq){
+//         existingreq.playlistId.push(playlistId);
+//         existingreq.creatoremail.push(emailId);
 
-    }else{
-        const newreq=new Req({
-            editoremail:emailId,
-            playlistId:playlistId,
-            creatoremail:editorEmail
-        })
-    }
+//     }else{
+//         const newreq=new Req({
+//             editoremail:emailId,
+//             playlistId:playlistId,
+//             creatoremail:editorEmail
+//         })
+//     }
     
 
-    await newreq.save();
+//     await newreq.save();
 
 
-});
-Route.post('/adddkkdkPlaylist', async (req, res) => {
-    const { username, playlistId, editorEmail } = req.body;
+// });
+Route.post('/addEditorToPlaylist', async (req, res) => {
+    const { emailId, playlistId, editorEmail } = req.body;
     console.log(playlistId);
     try {
-        const user = await User.findOne({ firstName: username });
+        const user = await User.findOne({ emailID:emailId });
         console.log(user);    
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
@@ -303,11 +343,11 @@ Route.post('/adddkkdkPlaylist', async (req, res) => {
         }
 
         playlist.editorsreq.push({ emailID: editorEmail });
-        console.log(`${editorEmail}${playlistId}${user.emailID}`);
+        console.log(`akjscjasnclkanklcSSSSSSSSSSSSSS${editorEmail}${playlistId}${user.emailID}`);
         const newreq=new Req({
             editoremail:editorEmail,
             playlistId:playlistId,
-            creatoremail:user.emailID
+            creatoremail:emailId
         });
         await newreq.save();
 
@@ -319,6 +359,58 @@ Route.post('/adddkkdkPlaylist', async (req, res) => {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 });
+Route.post('/approvecreator', async (req, res) => {
+    const { requestId } = req.body;
+  
+    if (!requestId) {
+      return res.status(400).json({ error: 'Request ID is required' });
+    }
+  
+    try {
+      // Find the request
+      const request = await Req.findById(requestId);
+  
+      if (!request) {
+        return res.status(404).json({ error: 'Request not found' });
+      }
+  
+  
+      await Req.findByIdAndDelete(requestId);
+        await ApprovedCreator.create({
+        creatoremail: request.creatoremail,
+        editoremail: request.editoremail,
+        playlistId:request.playlistId
+      });
+  
+      res.status(200).json({ message: 'Request approved successfully' });
+    } catch (error) {
+      console.error('Error approving request:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+
+
+Route.post('/rejectcreator', async (req, res) => {
+    const { requestId } = req.body;
+  
+    if (!requestId) {
+      return res.status(400).json({ error: 'Request ID is required' });
+    }
+  
+    try {
+      // Find and remove the request from the requests collection
+      const result = await Request.findByIdAndDelete(requestId);
+  
+      if (!result) {
+        return res.status(404).json({ error: 'Request not found' });
+      }
+  
+      res.status(200).json({ message: 'Request rejected successfully' });
+    } catch (error) {
+      console.error('Error rejecting request:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
 
 Route.post('/setPlaylists', async (req, res) => {
     const email = req.query.emailId
@@ -389,8 +481,6 @@ Route.post('/uploadprofile', upload.single('file'), async (req, res) => {
         res.status(500).send('Error uploading file.');
     }
 });
-
-
 Route.get('/getProfile',async (req,res) =>{
     try {
         const fileId = req.query.id;
@@ -407,6 +497,5 @@ Route.get('/getProfile',async (req,res) =>{
         console.error('Error retrieving file:', error);
         res.status(500).send('Error retrieving file.');
     }
-})
-
+});
 module.exports=Route,{User}

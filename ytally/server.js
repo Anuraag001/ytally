@@ -4,6 +4,7 @@ const express = require('express');
   // const { google } = require('googleapis');
   const userRoutes = require('./routes/userRoutes');
   const youtubeRoutes = require('./routes/youtubeRoutes'); 
+  const Adminuser=require('./routes/creatorroute');
   const { google } = require('googleapis'); 
   // const cors = require('cors');
   const OAuth2 = google.auth.OAuth2; 

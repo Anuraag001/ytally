@@ -114,7 +114,7 @@ const Homepage = () => {
         const selectedPlaylist = playlistId;
         if (!selectedPlaylist) {
           setError('No playlist selected');
-            console.log(`AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA${editor.emailID}`)
+            console.log(`AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA}`)
             return;
 
         }
